@@ -15,7 +15,7 @@ import numpy as np
 
 from .calibration import Calibrator, brier, buckets, log_loss, rps
 from .data.openfootball import LEAGUES, load
-from .engine import CALIB_PATH, confidence, run_elo
+from .engine import CALIB_PATH, W_DC, confidence, run_elo
 from .markets import markets, settle
 from .models.dixon_coles import DixonColes
 
@@ -49,9 +49,15 @@ def walk_forward(matches, test_from_season: str):
                     "score": [m.hg, m.ag], "ht": [m.hthg, m.htag],
                     "dc": pdc.tolist(), "elo": pel.tolist(), "base": fb.tolist(),
                     "agree": float(1 - np.abs(pdc - pel).max()), "comp": comp,
-                    "mk": {x["key"]: x["p"] for x in markets(M, HT, m.home, m.away) if not x["key"].startswith("CS")},
+                    "mk": _blend_mk({x["key"]: x["p"] for x in markets(M, HT, m.home, m.away) if not x["key"].startswith("CS")}, pdc, pel),
                 })
     return rows
+
+
+def _blend_mk(mk, pdc, pel):
+    b1, bX, b2 = W_DC * pdc + (1 - W_DC) * pel
+    mk.update({"1": b1, "X": bX, "2": b2, "1X": b1 + bX, "X2": bX + b2, "12": b1 + b2, "DNB1": b1 / (b1 + b2), "DNB2": b2 / (b1 + b2)})
+    return {k: float(v) for k, v in mk.items()}
 
 
 def evaluate(rows, calib: Calibrator | None = None):
@@ -60,7 +66,7 @@ def evaluate(rows, calib: Calibrator | None = None):
     for name in ("base", "elo", "dc"):
         P = np.array([r[name] for r in rows])
         res[name] = {"log_loss": log_loss(P, Y), "brier": brier(P, Y), "rps": rps(P, Y), "accuracy": float((P.argmax(1) == Y.argmax(1)).mean())}
-    Pb = np.array([0.75 * np.array(r["dc"]) + 0.25 * np.array(r["elo"]) for r in rows])
+    Pb = np.array([W_DC * np.array(r["dc"]) + (1 - W_DC) * np.array(r["elo"]) for r in rows])
     res["blend"] = {"log_loss": log_loss(Pb, Y), "brier": brier(Pb, Y), "rps": rps(Pb, Y), "accuracy": float((Pb.argmax(1) == Y.argmax(1)).mean())}
     # marchés binaires
     bin_rows = []

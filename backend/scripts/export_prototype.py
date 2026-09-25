@@ -25,7 +25,9 @@ report = {
     "calib": bt["all_seasons"]["calibration_all_markets"], "per_league": bt["per_league"],
     "top": t["top_picks"], "coupons": t["coupons"], "n_test": t["n"],
 }
-blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report}, ensure_ascii=False, separators=(",", ":"))
+track_path = ROOT / "data" / "track_summary.json"
+track = json.loads(track_path.read_text()) if track_path.exists() else None
+blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
 blob = blob.replace("</", "<\\/")
 html = HTML.read_text()
 new = re.sub(r'(<script id="realdata" type="application/json">).*?(</script>)', lambda m: m.group(1) + blob + m.group(2), html, flags=re.S)

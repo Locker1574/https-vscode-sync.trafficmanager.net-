@@ -49,6 +49,8 @@ class DixonColes:
     rho: float = -0.05
     n_matches: dict[str, float] = field(default_factory=dict)
     ht_share: float = 0.44      # part des buts marqués en 1re mi-temps (estimée)
+    promoted_prior: tuple = (-0.20, 0.20)  # a priori (attaque, défense) d'une équipe promue
+    use_prior: bool = True
 
     def fit(self, matches, ref: date):
         ms = [m for m in matches if m.played and m.date < ref]
@@ -69,10 +71,17 @@ class DixonColes:
         X[r, 0] = 1; X[r, 1] = 1; X[r, 2 + hi] = 1; X[r, 2 + n + ai] = 1
         X[N + r, 0] = 1; X[N + r, 2 + ai] = 1; X[N + r, 2 + n + hi] = 1
         pen = np.zeros(P); pen[2:] = self.l2
-        theta = np.zeros(P); theta[0] = np.log(max(y.mean(), 0.1))
+        centre = np.zeros(P)
+        latest = max(m.season for m in ms)
+        if self.use_prior and any(m.season < latest for m in ms):
+            seen_before = {m.home for m in ms if m.season < latest} | {m.away for m in ms if m.season < latest}
+            for t, i in idx.items():
+                if t not in seen_before:  # promue cette saison : rétrécie vers le profil type d'un promu
+                    centre[2 + i], centre[2 + n + i] = self.promoted_prior
+        theta = centre.copy(); theta[0] = np.log(max(y.mean(), 0.1))
         for _ in range(50):
             lam = np.exp(X @ theta)
-            g = X.T @ (W * (y - lam)) - pen * theta
+            g = X.T @ (W * (y - lam)) - pen * (theta - centre)
             Hm = (X * (W * lam)[:, None]).T @ X + np.diag(pen) + 1e-9 * np.eye(P)
             step = np.linalg.solve(Hm, g)
             theta += step
@@ -103,8 +112,9 @@ class DixonColes:
     def rates(self, home: str, away: str) -> tuple[float, float]:
         a, d = self.attack, self.defence
         # une équipe inconnue (promue sans historique) reçoit un léger malus
-        ah, aa = a.get(home, -0.15), a.get(away, -0.15)
-        dh, da = d.get(home, 0.15), d.get(away, 0.15)
+        pa, pd = self.promoted_prior
+        ah, aa = a.get(home, pa), a.get(away, pa)
+        dh, da = d.get(home, pd), d.get(away, pd)
         return float(np.exp(self.mu + self.home + ah + da)), float(np.exp(self.mu + aa + dh))
 
     def matrix(self, home: str, away: str) -> np.ndarray:

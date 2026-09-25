@@ -1,0 +1,49 @@
+name: OMNISCORE - mise à jour quotidienne
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # tous les jours à 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: omniscore-daily
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - name: Backtest et calibration (le lundi)
+        run: |
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            rm -f data/backtest_rows.json && python -m omniscore.backtest
+          fi
+      - name: Prédictions, journal réel, export vers le prototype
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python -m omniscore.cli predict
+          python -m omniscore.track
+          python scripts/export_prototype.py
+      - name: Enregistrer les nouvelles données
+        working-directory: .
+        run: |
+          git config user.name "omniscore-bot"
+          git config user.email "omniscore-bot@users.noreply.github.com"
+          git add backend/data prototype/omniscore.html
+          git diff --cached --quiet || git commit -m "Mise à jour quotidienne des prédictions ($(date -u +%F))"
+          git push

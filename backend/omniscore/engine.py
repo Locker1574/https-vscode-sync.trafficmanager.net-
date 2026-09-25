@@ -13,6 +13,7 @@ from .models.dixon_coles import DixonColes
 from .models.elo import Elo
 
 CALIB_PATH = Path(__file__).resolve().parents[1] / "data" / "calibration.json"
+W_DC = 0.65  # poids de Dixon-Coles dans le 1X2 (réglé par omniscore.tune, reste pour Elo)
 
 
 def run_elo(matches: list[Match], until: date) -> tuple[Elo, list, list]:
@@ -51,6 +52,12 @@ class LeagueModel:
         agree = 1 - max(abs(d1 - e1), abs(dX - eX), abs(d2 - e2))
         comp = min(1.0, min(self.dc.n_matches.get(m.home, 0), self.dc.n_matches.get(m.away, 0)) / 20)
         mk = markets(M, HT, m.home, m.away)
+        # 1X2 : mélange Dixon-Coles / Elo (meilleur RPS en validation), marchés dérivés recalculés
+        b1, bX, b2 = (W_DC * d1 + (1 - W_DC) * e1, W_DC * dX + (1 - W_DC) * eX, W_DC * d2 + (1 - W_DC) * e2)
+        blend = {"1": b1, "X": bX, "2": b2, "1X": b1 + bX, "X2": bX + b2, "12": b1 + b2, "DNB1": b1 / (b1 + b2), "DNB2": b2 / (b1 + b2)}
+        for x in mk:
+            if x["key"] in blend:
+                x["p"] = float(blend[x["key"]])
         for x in mk:
             x["p_raw"] = x["p"]
             if not x["key"].startswith("CS"):

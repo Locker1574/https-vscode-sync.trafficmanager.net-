@@ -16,6 +16,9 @@ LEAGUES = {
     "it.1": "Serie A",
     "de.1": "Bundesliga",
     "fr.1": "Ligue 1",
+    "nl.1": "Eredivisie",
+    "pt.1": "Liga Portugal",
+    "en.2": "Championship",
 }
 CACHE = Path(os.environ.get("OMNISCORE_CACHE", Path(__file__).resolve().parents[2] / "data" / "cache"))
 

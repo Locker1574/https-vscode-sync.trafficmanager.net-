@@ -108,3 +108,19 @@ def test_regenerate_keeps_better_selections():
     weak = [{**s, "p": 0.71} for s in cur]
     res2 = coupon.regenerate(preds, weak, 3)
     assert res2["replaced"] == 3 and all(s["p"] > 0.71 for s in res2["selections"])
+
+
+def test_track_freezes_once_and_settles():
+    from omniscore import track
+    mk = [{"key": k, "label": k, "p": p, "confidence": p * 100} for k, p in
+          [("1", .5), ("X", .3), ("2", .2), ("O1.5", .75), ("O2.5", .5), ("U2.5", .5), ("BTTS_Y", .5), ("BTTS_N", .5), ("1X", .8), ("X2", .5)]]
+    pred = {"id": "x:2030-01-05:A:B", "league": "x", "date": "2030-01-05", "home": "A", "away": "B", "markets": mk}
+    t = {}
+    assert track.freeze([pred], t, date(2030, 1, 1)) == 1
+    pred2 = {**pred, "markets": [{**x, "p": .99} for x in mk]}
+    assert track.freeze([pred2], t, date(2030, 1, 2)) == 0 and t[pred["id"]]["p"]["1"] == .5
+    m = Match("x", "2029-30", date(2030, 1, 5), None, None, "A", "B", 2, 0, 1, 0)
+    assert track.settle_all(t, [m]) == 1
+    assert t[pred["id"]]["pick"]["status"] == "V" and t[pred["id"]]["status"]["2"] == "P"
+    s = track.summary(t)
+    assert s["settled"] == 1 and s["picks_won"] == 1
