@@ -1,0 +1,4 @@
+data/cache/
+data/backtest_rows.json
+__pycache__/
+.pytest_cache/
