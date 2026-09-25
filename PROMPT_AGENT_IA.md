@@ -15,7 +15,7 @@ Ta mission : **concevoir, coder et livrer une application SaaS d'analyse et de p
 
 Nom de l'application : **OMNISCORE** (autres noms possibles : *PitchMind*, *Oraclix Football*, *XGenius*, *Predicta Elite*). Propose un logo, une identité visuelle et un slogan (ex. : « Les données voient le match avant vous »).
 
-Tu peux ajouter toute technologie, logique ou analyse qui améliore le produit, **à l'intérieur du cadre défini à la section 12** (légalité, licences des données, honnêteté des probabilités, jeu responsable).
+Tu peux ajouter toute technologie, logique ou analyse qui améliore le produit, **à l'intérieur du cadre défini à la section 24** (légalité, licences des données, honnêteté des probabilités, jeu responsable).
 
 ---
 
@@ -221,6 +221,19 @@ favorites(id, user_id, entity_type, entity_id, created_at)
 notifications(id, user_id, type, payload_json, read, created_at)
 user_bet_journal(id, user_id, prediction_id, stake, odds_taken, result, profit)
 audit_logs(id, actor, action, entity, entity_id, diff_json, created_at)
+
+-- Modules avancés
+predicted_lineups(id, match_id, team_id, player_id, start_probability, confirmed, updated_at)
+player_match_features(id, match_id, player_id, expected_minutes, xg90, xa90, shots90, cards90)
+confidence_scores(id, prediction_id, p_cal, agreement, completeness, market_agreement,
+                  integrity_risk, volatility, ic, computed_at)
+news_items(id, source, url, published_at, team_id, player_id, category, sentiment, summary)
+bankrolls(id, user_id, initial_amount, current_amount, kelly_fraction, max_stake_pct)
+alert_rules(id, user_id, name, conditions_json, channels_json, active)
+assistant_conversations(id, user_id, messages_json, created_at)
+model_performance(id, model_id, market_id, competition_id, period, brier, log_loss,
+                  hit_rate, roi, clv_avg, calibration_json)
+ws_event_log(seq, channel, payload_json, created_at)   -- rattrapage après reconnexion
 ```
 
 ---
@@ -282,7 +295,219 @@ Authentification sécurisée (JWT + refresh, 2FA), chiffrement TLS, RGPD (consen
 
 ---
 
-### 12. Cadre obligatoire (non négociable)
+### 12. Indice de confiance OMNISCORE (formule détaillée)
+
+La probabilité seule ne suffit pas : deux prédictions à 80 % ne se valent pas si l'une repose sur des données incomplètes. Calcule un **indice de confiance (IC) de 0 à 100** :
+
+```
+IC = 100 × p_cal^α × A^β × D^γ × M^δ × (1 − R)^ε × (1 − V)^ζ
+```
+
+| Facteur | Signification | Calcul |
+|---|---|---|
+| `p_cal` | Probabilité calibrée de l'ensemble de modèles | sortie du méta-modèle après calibration isotonique |
+| `A` | Accord entre modèles | `1 − écart-type des probabilités des modèles / 0,5` |
+| `D` | Complétude des données | part des variables clés disponibles (compos confirmées, xG, absences, arbitre…) |
+| `M` | Accord avec le marché | `1 − |p_modèle − p_marché_sans_marge|`, avec Pinnacle comme référence |
+| `R` | Risque intégrité | score du menu Intégrité ramené entre 0 et 1 |
+| `V` | Volatilité | instabilité de la prédiction sur les dernières heures (live : dernières minutes) |
+
+Les exposants `α…ζ` sont **appris par optimisation** (maximisation de la réussite par tranche d'IC en backtest) et non fixés à la main. Seules les sélections avec `p_cal ∈ [0,70 ; 0,98]` **et** `IC ≥ seuil utilisateur` entrent dans les coupons.
+
+---
+
+### 13. Algorithme « Générer / Régénérer » (pseudo-code)
+
+```python
+def generer(date_scope, taille, conf_min=0.70, conf_max=0.98, mode="surete"):
+    candidats = [
+        p for p in predictions(date_scope)
+        if conf_min <= p.p_cal <= conf_max
+        and p.integrity_level in ("vert", "jaune")
+        and p.match.kickoff > now() + marge_minutes
+    ]
+    # une seule sélection par match (la meilleure selon le mode)
+    meilleurs = best_per_match(candidats, key=score(mode))
+    coupon = []
+    for c in sorted(meilleurs, key=score(mode), reverse=True):
+        if len(coupon) == taille: break
+        if max_correlation(c, coupon) < 0.3:   # évite les sélections liées
+            coupon.append(c)
+    return Coupon(coupon, p_combinee=proba_jointe(coupon))  # via Monte-Carlo si corrélations
+
+def regenerer(coupon_actuel, **params):
+    nouveau = generer(**params, exclure=ids(coupon_actuel))
+    final = []
+    for ancien, neuf in zip_longest(coupon_actuel.sorted(), nouveau.sorted()):
+        final.append(max(ancien, neuf, key=lambda s: (s.p_cal, s.ic)) if neuf else ancien)
+    if final == coupon_actuel.selections:
+        return coupon_actuel.with_message("Coupon déjà optimal")
+    return Coupon(dedupe(final), p_combinee=proba_jointe(final))
+```
+
+Score selon le mode :
+- **Sûreté** : `p_cal × IC`
+- **Rendement** : `EV × IC` (EV = p × cote − 1)
+- **Équilibré** : `√(p_cal) × (1 + EV) × IC`
+
+Les sélections verrouillées par l'utilisateur (🔒) ne sont jamais remplacées. Chaque génération est enregistrée (`generation_round`) avec les sélections remplacées et la raison.
+
+---
+
+### 14. Moteur live avancé
+
+- **Modèle d'intensité de but variable dans le temps** : `λ(t) = λ₀ × f(minute) × g(score) × h(cartons rouges) × k(momentum)`. Les buts sont plus fréquents en fin de mi-temps. Une équipe menée attaque davantage. Un carton rouge réduit fortement l'intensité de l'équipe réduite.
+- **Mise à jour bayésienne** à chaque événement (but, carton, tir, corner, changement) de la force offensive et défensive estimée.
+- **Indice de momentum** sur une fenêtre de 5 à 10 minutes : attaques dangereuses, tirs, xG, corners, possession dans le dernier tiers.
+- **Probabilité du prochain but** et du prochain corner/carton, recalculées à chaque événement.
+- **Modèle de minute du prochain événement** (analyse de survie : Cox / Weibull).
+- **Détection d'écart live** : la cote live s'écarte fortement du modèle sans événement visible → signal envoyé au menu Intégrité.
+- **Suspension automatique** de l'affichage des prédictions pendant les phases de VAR, de penalty ou de coupure du flux, pour éviter des pourcentages faux.
+
+---
+
+### 15. Analyse de marché avancée (mouvements de cotes)
+
+- **Steam move** : mouvement rapide et simultané chez plusieurs bookmakers.
+- **Reverse line movement** : la cote bouge à l'inverse de la majorité des paris publics.
+- **Écart d'ouverture à clôture** et **CLV** par marché, compétition et bookmaker.
+- **Écart sharp/soft** : différence entre Pinnacle/Betfair et les bookmakers grand public.
+- **Liquidité** : volumes appariés sur l'exchange et profondeur du carnet.
+- **Efficience par ligue** : identifier les championnats où le modèle bat le plus le marché.
+- Chaque mouvement est classé par importance (**faible / moyen / fort / critique**), coloré et historisé.
+
+---
+
+### 16. Modules supplémentaires
+
+1. **Assistant IA conversationnel** : l'utilisateur pose ses questions (« Pourquoi 78 % sur Over 2.5 ? », « Compare Arsenal et Liverpool sur les corners »). L'assistant répond à partir des données de l'app, cite les chiffres et n'invente rien.
+2. **Gestionnaire de bankroll** : capital, mises Kelly fractionnées, plafonds, courbe de profit, drawdown et alertes de perte.
+3. **Compositions probables** : prédiction des onze de départ (historique de rotation, calendrier, blessures) avant l'annonce officielle, puis recalcul automatique à l'annonce.
+4. **Module arbitres** : moyennes de cartons, fautes et penalties par arbitre, tendance domicile/extérieur, impact sur les marchés cartons.
+5. **Props joueurs** : buteur, tirs, tirs cadrés, passes décisives, cartons par joueur (modèles par minute jouée).
+6. **Contexte physique** : fatigue (minutes cumulées, jours de repos), distance parcourue, décalage horaire, altitude, météo, état de la pelouse.
+7. **Effet entraîneur et mercato** : ajustement des ratings après un changement d'entraîneur ou un transfert majeur.
+8. **Analyse de l'actualité (NLP)** : analyse des sources d'information sous licence (communiqués officiels, conférences de presse) pour détecter blessures, tensions et rotations.
+9. **Simulateur « et si »** : l'utilisateur modifie un paramètre (absence du buteur, carton rouge à la 30ᵉ minute) et voit les probabilités évoluer.
+10. **Comparateur d'équipes** : radars, confrontations directes, styles de jeu (pressing, jeu direct, possession).
+11. **Constructeur d'alertes** : règles personnalisées, par ex. « préviens-moi si une value > 5 % apparaît en Ligue 1 avec IC ≥ 80 ».
+12. **Tableau de transparence** : performances réelles publiques du modèle (réussite, ROI, calibration) par marché et par ligue.
+13. **API B2B** : accès payant aux prédictions et signaux pour médias et partenaires.
+
+---
+
+### 17. Variables du modèle (feature store)
+
+Toutes les variables sont versionnées et calculées **uniquement avec les données connues avant le coup d'envoi**, pour éviter le « data leakage ».
+
+- **Forme** : points, buts et xG sur 3/5/10 matchs (pondérés dans le temps), séparés domicile/extérieur.
+- **Force** : Elo, Glicko, ratings bayésiens attaque/défense, valeur marchande de l'effectif aligné.
+- **Style** : possession, PPDA, passes progressives, centres, jeu aérien, pressing haut.
+- **Effectif** : absences pondérées par l'importance du joueur (minutes et contribution xG/xA), gardien titulaire.
+- **Calendrier** : jours de repos, match européen avant/après, distance de déplacement.
+- **Enjeu** : écart au titre, à l'Europe, à la relégation, derby, match retour (score de l'aller).
+- **Arbitre et conditions** : profil de l'arbitre, météo, pelouse, affluence.
+- **Marché** : cotes d'ouverture, cotes actuelles sans marge, mouvements, volumes.
+
+---
+
+### 18. API et événements temps réel
+
+**REST (extraits)**
+```
+GET  /v1/matches?date=&competition=&status=
+GET  /v1/matches/{id}                 # fiche complète + enjeux
+GET  /v1/matches/{id}/predictions     # tous les marchés, triés par IC
+GET  /v1/value-bets?min_value=&min_ic=
+POST /v1/coupons/generate             # {size, conf_min, conf_max, mode, scope}
+POST /v1/coupons/{id}/regenerate
+GET  /v1/combo?count=1..20&conf_min=&mode=
+GET  /v1/journal?period=&status=&market=
+GET  /v1/integrity/alerts?level=
+GET  /v1/teams/{id}/stats?metric=corners|shots|cards|...
+POST /v1/favorites   DELETE /v1/favorites/{id}
+POST /v1/assistant/ask
+```
+
+**WebSocket** (`wss://…/live`, abonnement par match ou par canal)
+```
+match.event        { match_id, minute, type, team, player }
+match.stats        { match_id, stats, xg, momentum }
+prediction.update  { prediction_id, p_cal, ic, fair_odds, value }
+prediction.settled { prediction_id, status: VALIDE|PERDU|PUSH|ANNULE }
+odds.move          { match_id, market, from, to, pct, severity }
+integrity.alert    { match_id, risk_score, level, signals[] }
+```
+Chaque message porte un **numéro de séquence**. À la reconnexion, le client demande les messages manqués depuis le dernier numéro reçu (aucune perte).
+
+---
+
+### 19. Indicateurs de qualité (KPI et SLO)
+
+| Domaine | Objectif |
+|---|---|
+| Calibration | écart moyen entre probabilité prévue et fréquence observée < 3 points par tranche de 10 % |
+| Précision | Brier et log-loss meilleurs que les probabilités du marché sans marge (hors Pinnacle) |
+| Value | CLV moyen positif sur 1 000+ value bets |
+| Temps réel | latence événement → écran ≤ 1 s (p95) ; cotes pré-match ≤ 60 s |
+| Disponibilité | 99,9 % |
+| Données | 0 événement perdu ; réconciliation automatique avec le résultat officiel |
+| Interface | Lighthouse ≥ 90, premier affichage < 2 s en 4G |
+
+Un **rapport de performance automatique** est publié chaque semaine dans l'app (tableau de transparence).
+
+---
+
+### 20. Modèle économique
+
+| Plan | Prix indicatif | Contenu |
+|---|---|---|
+| **Free** | 0 € | 3 prédictions/jour, calendrier, stats de base |
+| **Pro** | 19-29 €/mois | toutes les prédictions, coupons, combo, journal, favoris, alertes |
+| **Elite** | 59-99 €/mois | live avancé, intégrité, value bets en temps réel, assistant IA, simulateur, bankroll |
+| **B2B / API** | sur devis | flux de prédictions et de signaux pour médias et partenaires |
+
+Essai gratuit de 7 jours, paiement annuel avec réduction, parrainage. L'abonnement donne accès à des analyses : aucun gain n'est promis.
+
+---
+
+### 21. Critères d'acceptation (exemples à tester)
+
+- **Coupon** : un coupon de 5 ne contient que des sélections entre 70 et 98 %, une seule par match, aucune sur un match 🟠/🔴 en intégrité, et affiche la probabilité combinée.
+- **Régénérer** : si toutes les nouvelles sélections sont plus faibles, le coupon reste identique et le message « Coupon déjà optimal » apparaît.
+- **Live** : un but est affiché et les prédictions recalculées en moins d'1 s. Une prédiction « Over 1.5 » passe en **Validé** dès le 2ᵉ but.
+- **Journal** : les compteurs Tous / En cours / Validés / Perdus / Push correspondent exactement au détail des lignes.
+- **Intégrité** : un mouvement de cote simulé de −25 % en 10 minutes sans information publique déclenche une alerte 🟠 horodatée.
+- **Reconnexion** : après une coupure réseau de 30 s, le client récupère tous les événements manqués sans doublon.
+
+---
+
+### 22. Équipe virtuelle et méthode de travail
+
+Travaille comme une équipe organisée :
+1. **Product owner** : découpe en user stories avec critères d'acceptation.
+2. **Data engineer** : ingestion, nettoyage, réconciliation des sources.
+3. **Data scientist** : modèles, backtests, calibration, rapport de performance.
+4. **Backend / temps réel** : API, WebSocket, files de messages.
+5. **Frontend / UX** : maquettes, design system, composants, accessibilité.
+6. **QA / SRE** : tests, monitoring, sécurité, déploiements.
+
+À chaque étape, livre du code fonctionnel, les tests et un court compte rendu (fait, mesuré, prochaine étape).
+
+---
+
+### 23. Pistes d'innovation (phase 5)
+
+- **Données de tracking** (positions des joueurs) pour les modèles de contrôle de l'espace (pitch control) et de probabilité de but par action (VAEP, xT).
+- **Vision par ordinateur** sur les flux vidéo autorisés, pour détecter pressing et formations.
+- **Modèles de graphes** (GNN) sur les réseaux de passes.
+- **Apprentissage en ligne** : les modèles s'ajustent en continu pendant la saison.
+- **Explications en langage naturel** générées automatiquement pour chaque prédiction.
+- **Widgets et extensions** : widget mobile, bot Telegram/Discord, montre connectée.
+
+---
+
+### 24. Cadre obligatoire (non négociable)
 
 1. **Données** : uniquement des sources légales, sous licence ou API officielles, en respectant leurs conditions d'utilisation. Aucune donnée inventée présentée comme réelle.
 2. **Honnêteté des probabilités** : aucun pronostic n'est garanti. Les pourcentages affichés sont des probabilités calibrées et vérifiables, accompagnées des performances historiques réelles du modèle. Jamais de « 100 % sûr ».
@@ -290,4 +515,4 @@ Authentification sécurisée (JWT + refresh, 2FA), chiffrement TLS, RGPD (consen
 4. **Jeu responsable** : vérification d'âge (18+), limites de dépôt/mise conseillées, messages de prévention, liens vers les services d'aide, respect de la réglementation de chaque pays.
 5. **Qualité** : chaque fonctionnalité est testée, documentée et mesurée avant d'être livrée.
 
-Commence par me présenter l'architecture détaillée et le plan du MVP, puis code étape par étape en me montrant l'avancement.
+Commence par me présenter l'architecture détaillée, le schéma de données final et le plan du MVP (user stories + critères d'acceptation). Ensuite, code étape par étape : à chaque étape, montre l'avancement, les tests passés et les métriques du modèle.
