@@ -14,3 +14,11 @@ Prototype fonctionnel en un seul fichier (`omniscore.html`), sans dépendance ni
 - Combo : réglette 1-20, sélecteur rapide, curseur de confiance, modes Rendement / Sûreté / Équilibré, cotes simples.
 - Journal (statuts, calibration, ROI par marché), Intégrité (z-score robuste, divergence, volume, 4 niveaux de couleur, journal des changements), Stats équipes (10 métriques, tendances, anomalies), Favoris et notifications.
 - Sauvegarde locale de l'état toutes les 5 s, avec rattrapage du temps écoulé au rechargement.
+
+## Version 2
+- **Assistant IA** : chat connecté aux données de l'app. Claude appelle 7 fonctions de la page : chercher des matchs, fiche match, value bets, composer un coupon, alertes intégrité, stats équipe, performance. Un bouton « Analyser ce match avec l'IA » est aussi dans chaque fiche match. Il fonctionne quand la page est ouverte dans Claude (capacité `sample`).
+- **Bankroll** : capital, fraction de Kelly (⅛, ¼, ½), mise plafonnée, limite de perte quotidienne qui bloque les nouvelles mises, règlement automatique des paris et coupons, courbe du capital, ROI et baisse maximale.
+- **Alertes personnalisées** : règles (compétition, marché, proba min., value min., confiance min.) vérifiées à chaque mise à jour du marché.
+- **Simulateur « et si »** dans la fiche match : forme offensive ±30 %, absence du meilleur buteur, carton rouge à la minute X, forte pluie → probabilités recalculées avec l'écart.
+- **Comparateur d'équipes** : radar sur 8 statistiques dans Stats équipes.
+- Bouton **+** pour suivre un pari depuis les Value bets, les fiches match, les coupons et le Combo.

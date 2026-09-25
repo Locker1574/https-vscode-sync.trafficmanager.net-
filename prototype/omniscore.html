@@ -182,6 +182,12 @@ td.r,th.r{text-align:right}
 .empty{padding:22px;text-align:center;color:var(--mu)}
 .method p,.method li{max-width:72ch}
 .method code{font-family:var(--fM);font-size:12.5px;background:var(--sf2);padding:1px 5px;border-radius:4px}
+.msg-u{display:flex;justify-content:flex-end}
+.msg-u .bd2{background:var(--ac);color:var(--acTx);padding:9px 13px;border-radius:12px 12px 2px 12px;max-width:80%;white-space:pre-wrap}
+.msg-a .bd2{background:var(--sf2);padding:10px 14px;border-radius:12px 12px 12px 2px;max-width:92%;white-space:pre-wrap;line-height:1.55}
+.add{background:none;border:1px solid var(--ln);border-radius:6px;padding:1px 7px;color:var(--ac);font-weight:600}
+.add:hover{border-color:var(--ac)}
+#aiOut{white-space:pre-wrap;line-height:1.55;font-size:13.5px}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px}
 .lcard .sgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (max-width:860px){
@@ -573,11 +579,13 @@ const S={tab:'home',ready:false,calDay:0,calLeague:'all',calStatus:'all',q:'',li
   cSize:5,cMin:75,cMode:'surete',cQ:'',coupon:null,alt:null,couponMsg:'',couponHist:[],
   comboScope:'jour',comboN:5,comboMin:75,comboMode:'equilibre',comboSingles:false,
   jPer:'all',jSt:'all',jG:'all',iLvl:'all',stM:'corners',stLeague:'all',stTeam:null,vMin:4,
-  favs:new Set(),favTeams:new Set(),notes:[],drawer:null,lastData:Date.now()};
+  favs:new Set(),favTeams:new Set(),notes:[],drawer:null,lastData:Date.now(),
+  bets:[],bank:{init:1000,kelly:.25,maxPct:5,dayLoss:10},rules:[],hits:[],seen:new Set(),chat:[],aiBusy:false,
+  sim:{attH:0,attA:0,red:0,absH:false,absA:false,rain:false},simFor:null,cmpB:null};
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify({seed:DATA.seed,genAt:DATA.genAt,T:DATA.T,
     ms:DATA.matches.map(m=>({id:m.id,status:m.status,st:m.st||null,ev:m.ev,mom:m.mom,lh:m.lh,la:m.la,ilog:m.ilog,risk:m.risk,ko:m.ko,stop:m.stop})),
-    u:{favs:[...S.favs],favTeams:[...S.favTeams],coupon:S.coupon,couponHist:S.couponHist,notes:S.notes.slice(0,40),tab:S.tab},savedAt:Date.now()}))}catch(e){}
+    u:{favs:[...S.favs],favTeams:[...S.favTeams],coupon:S.coupon,couponHist:S.couponHist,notes:S.notes.slice(0,40),tab:S.tab,bets:S.bets.slice(0,300),bank:S.bank,rules:S.rules,hits:S.hits.slice(0,60),seen:[...S.seen].slice(-3000),chat:S.chat.filter(t=>!t.pending).slice(-20)},savedAt:Date.now()}))}catch(e){}
 }
 function load(){
   let saved=null;try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
@@ -589,7 +597,7 @@ function load(){
     rng=Math.random;
     DATA.matches.forEach(priceSels);
     DATA.T=saved.T||[];
-    const u=saved.u||{};S.favs=new Set(u.favs||[]);S.favTeams=new Set(u.favTeams||[]);S.coupon=u.coupon||null;S.couponHist=u.couponHist||[];S.notes=u.notes||[];if(u.tab)S.tab=u.tab;
+    const u=saved.u||{};S.favs=new Set(u.favs||[]);S.favTeams=new Set(u.favTeams||[]);S.coupon=u.coupon||null;S.couponHist=u.couponHist||[];S.notes=u.notes||[];if(u.tab)S.tab=u.tab;S.bets=u.bets||[];if(u.bank)S.bank={...S.bank,...u.bank};S.rules=u.rules||[];S.hits=u.hits||[];S.seen=new Set(u.seen||[]);S.chat=u.chat||[];
     // rattrapage du temps écoulé pendant l'absence (max 20 min de jeu)
     const missed=Math.min(40,Math.floor((now-(saved.savedAt||now))/1000));
     for(let i=0;i<missed;i++)DATA.matches.filter(m=>m.status==='LIVE').forEach(m=>liveTick(m,true));
@@ -620,6 +628,7 @@ function tick(){
     if(m.status==='LIVE'){m.live=liveSpecs(m);autoTrackLive(m);settle(m)}
     if(m.st.hg+m.st.ag!==g0)settle(m);
   });
+  if(settleBets()&&S.tab==='bankroll')renderDyn();
   $('#clock').textContent='Mise à jour '+hms(Date.now());
   if(['home','live','cal','journal','integ','favs'].includes(S.tab))renderDyn();
   if(S.drawer){const m=MB(S.drawer);if(m&&m.status==='LIVE')renderDrawer()}
@@ -635,7 +644,8 @@ function marketTick(){
     const o=m.oh[m.oh.length-1]*Math.exp(gauss()*.006);m.oh.push(+o.toFixed(3));if(m.oh.length>60)m.oh.shift();
   }
   S.lastData=Date.now();
-  if(['value','home'].includes(S.tab))renderDyn();
+  checkRules();
+  if(['value','home','alerts'].includes(S.tab))renderDyn();
   save();
 }
 const MB=id=>DATA.matches.find(m=>m.id===id);
@@ -687,7 +697,7 @@ const LGN=id=>LEAGUES.find(l=>l.id===id).n;
 const matchText=m=>(TN(m.h)+' '+TN(m.a)+' '+LGN(m.lg)).toLowerCase();
 
 /* ============ Rendu ============ */
-const NAV=[['home','Accueil'],['cal','Calendrier'],['search','Recherche'],['live','En direct'],['coupons','Coupons du jour'],['combo','Combo'],['value','Value bets'],['journal','Journal'],['integ','Intégrité'],['stats','Stats équipes'],['favs','Favoris'],['method','Méthode']];
+const NAV=[['home','Accueil'],['cal','Calendrier'],['search','Recherche'],['live','En direct'],['coupons','Coupons du jour'],['combo','Combo'],['value','Value bets'],['journal','Journal'],['integ','Intégrité'],['stats','Stats équipes'],['favs','Favoris'],['alerts','Alertes perso'],['bankroll','Bankroll'],['assistant','Assistant IA'],['method','Méthode']];
 function renderNav(){
   const live=DATA.matches.filter(m=>m.status==='LIVE').length;
   const al=DATA.matches.filter(m=>m.status!=='FT'&&lvl(m.risk)>=2).length;
@@ -840,7 +850,7 @@ dyn:()=>{
   const w=`<div class="warn">Plus il y a de sélections, plus la probabilité du combiné baisse : 10 sélections à 90 % ne passent ensemble que dans ≈ 35 % des cas. Aucun coupon n'est « sûr ». Jouez de manière responsable (18+).</div>`;
   if(!c)return`<div class="list"><div class="empty">Cliquez sur « Générer » pour composer un coupon.</div></div>${w}`;
   return`${S.couponMsg?`<div class="msg">${esc(S.couponMsg)}</div>`:''}
-   <div class="grid2" style="align-items:start"><div><h3 style="margin-bottom:8px">Coupon retenu</h3>${c.items.length?couponList(c.items,true):'<div class="list"><div class="empty">Aucune sélection.</div></div>'}</div>
+   <div class="grid2" style="align-items:start"><div><div class="row" style="justify-content:space-between;margin-bottom:8px"><h3>Coupon retenu</h3>${c.items.length?'<button class="btn" data-act="betCoupon">+ Suivre dans la bankroll</button>':''}</div>${c.items.length?couponList(c.items,true):'<div class="list"><div class="empty">Aucune sélection.</div></div>'}</div>
    ${S.alt?`<div><h3 style="margin-bottom:8px">Nouvelle proposition</h3>${S.alt.length?couponList(S.alt,false):'<div class="list"><div class="empty">Aucune autre sélection disponible.</div></div>'}</div>`:''}</div>
    ${w}
    ${S.couponHist.length?`<div><h3 style="margin-bottom:8px">Historique des générations</h3><div class="tw panel" style="padding:0"><table><thead><tr><th>Heure</th><th class="r">Sélections</th><th class="r">Proba. combinée</th><th class="r">Cote</th></tr></thead><tbody>${S.couponHist.map(h=>`<tr><td class="num">${hms(h.at)}</td><td class="r num">${h.n}</td><td class="r num">${pc(h.p)}</td><td class="r num">${od(h.o)}</td></tr>`).join('')}</tbody></table></div></div>`:''}`;
@@ -866,7 +876,7 @@ dyn:()=>{
     return short+`<div class="tw panel" style="padding:0"><table><thead><tr><th>Sélection</th><th>Match</th><th class="r">Proba.</th><th class="r">Cote</th><th class="r">Value</th><th class="r">Mise ¼ Kelly</th></tr></thead><tbody>${items.map(i=>{const m=MB(i.mid);const k=(i.p*i.odds-1)/(i.odds-1)/4;return`<tr class="click" data-act="open:${m.id}"><td>${esc(i.label)}</td><td class="mu">${esc(TN(m.h))} – ${esc(TN(m.a))}</td><td class="r"><span class="cp ${confCls(i.p)}">${pc(i.p)}</span></td><td class="r num">${od(i.odds)}</td><td class="r num">${dec(i.val*100)} %</td><td class="r num">${k>0?dec(k*100)+' % du capital':'pas de value'}</td></tr>`}).join('')}</tbody></table></div>`;
   }
   const pr=items.reduce((a,i)=>a*i.p,1);
-  return short+couponList(items,false)+(pr<.5?`<div class="warn">Probabilité combinée de ${pc(pr)} : ce combiné perdra plus souvent qu'il ne gagnera. Réduisez le nombre de matchs ou passez en cotes simples.</div>`:'');
+  return short+'<div class="row"><button class="btn" data-act="betCombo">+ Suivre ce combo dans la bankroll</button></div>'+couponList(items,false)+(pr<.5?`<div class="warn">Probabilité combinée de ${pc(pr)} : ce combiné perdra plus souvent qu'il ne gagnera. Réduisez le nombre de matchs ou passez en cotes simples.</div>`:'');
 }};
 
 /* ---- Value bets ---- */
@@ -875,8 +885,8 @@ V.value={head:()=>`<div class="ph"><div><div class="eyebrow">Value bets</div><h2
 dyn:()=>{
   const vb=valueBets().slice(0,80);
   if(!vb.length)return'<div class="list"><div class="empty">Aucune value bet à ce seuil.</div></div>';
-  return`<div class="tw panel" style="padding:0"><table><thead><tr><th>Match</th><th>Sélection</th><th class="r">Proba.</th><th class="r">Cote juste</th><th class="r">Meilleure cote</th><th>Bookmaker</th><th class="r">Value</th><th class="r">¼ Kelly</th><th>Confiance</th></tr></thead><tbody>
-  ${vb.map(({m,s})=>{const k=(s.p*s.best-1)/(s.best-1)/4;return`<tr class="click" data-act="open:${m.id}"><td><div>${esc(TN(m.h))} – ${esc(TN(m.a))}</div><div class="mu" style="font-size:12px">${dayLbl(m.ko)} ${hm(m.ko)}</div></td><td>${esc(s.label)}</td><td class="r"><span class="cp ${confCls(s.p)}">${pc(s.p)}</span></td><td class="r num">${od(s.fair)}</td><td class="r num">${od(s.best)}</td><td class="mu">${s.bk}</td><td class="r"><span class="cp c-hi">+${dec(s.val*100)} %</span></td><td class="r num">${dec(k*100)} %</td><td>${icB(s.ic)}</td></tr>`}).join('')}</tbody></table></div>`;
+  return`<div class="tw panel" style="padding:0"><table><thead><tr><th>Match</th><th>Sélection</th><th class="r">Proba.</th><th class="r">Cote juste</th><th class="r">Meilleure cote</th><th>Bookmaker</th><th class="r">Value</th><th class="r">¼ Kelly</th><th>Confiance</th><th></th></tr></thead><tbody>
+  ${vb.map(({m,s})=>{const k=(s.p*s.best-1)/(s.best-1)/4;return`<tr class="click" data-act="open:${m.id}"><td><div>${esc(TN(m.h))} – ${esc(TN(m.a))}</div><div class="mu" style="font-size:12px">${dayLbl(m.ko)} ${hm(m.ko)}</div></td><td>${esc(s.label)}</td><td class="r"><span class="cp ${confCls(s.p)}">${pc(s.p)}</span></td><td class="r num">${od(s.fair)}</td><td class="r num">${od(s.best)}</td><td class="mu">${s.bk}</td><td class="r"><span class="cp c-hi">+${dec(s.val*100)} %</span></td><td class="r num">${dec(k*100)} %</td><td>${icB(s.ic)}</td><td><button class="add" data-act="bet:${m.id}|${s.id}" aria-label="Ajouter à la bankroll" title="Ajouter à la bankroll">+</button></td></tr>`}).join('')}</tbody></table></div>`;
 }};
 
 /* ---- Journal ---- */
@@ -947,6 +957,7 @@ dyn:()=>{
     <div class="panel"><div class="row" style="justify-content:space-between"><div><div class="eyebrow">${LGN(T.lg)} · ${T.pos}e · Elo ${T.elo}</div><h3>${esc(T.n)}</h3></div><button class="star${S.favTeams.has(sel)?' on':''}" data-act="favT:${sel}" aria-label="Équipe favorite">${S.favTeams.has(sel)?'★':'☆'}</button></div>
      <div class="sgrid" style="margin-top:8px"><div><span>Moy. pour</span><b class="num">${fmt(T.h[k].f.reduce((s,v)=>s+v,0)/10)}</b></div><div><span>Moy. contre</span><b class="num">${fmt(T.h[k].a.reduce((s,v)=>s+v,0)/10)}</b></div><div><span>Max</span><b class="num">${fmt(Math.max(...T.h[k].f))}</b></div></div>
      <div style="margin-top:10px">${bars(T.h[k].f,300,60)}</div>${pred}</div>
+    ${cmpPanel(sel)}
     <div class="panel"><h3>Valeurs inhabituelles</h3><p class="note">Dernier match nettement au-dessus de la moyenne de l'équipe (z &gt; 2,5). À croiser avec le menu Intégrité.</p><div class="tl">${alerts.slice(0,10).map(a=>`<div class="${SEVC[a.sev]}"><span class="num mu">z ${dec(a.z)}</span><i class="dot"></i><span>${esc(a.t.n)} : ${a.v} ${a.M.n.toLowerCase()} (moy. ${dec(a.mu)})</span><span class="risk">${SEVN[a.sev]}</span></div>`).join('')||'<div><span></span><span></span><span class="mu">Aucune anomalie.</span><span></span></div>'}</div></div>
    </div></div>`;
 }};
@@ -976,6 +987,8 @@ V.method={dyn:()=>`<div class="method panel" style="display:flex;flex-direction:
 /* ---- Fiche match (tiroir) ---- */
 function renderDrawer(){
   const m=MB(S.drawer);const d=$('#drawer');if(!m){d.hidden=true;return}
+  if(S.simFor!==m.id){S.simFor=m.id;S.sim={attH:0,attA:0,red:0,absH:false,absA:false,rain:false}}
+  if(d.contains(document.activeElement)&&document.activeElement.matches('input'))return;
   const st=m.st&&m.status!=='NS'?m.st:null;const h=TEAMS[m.h],a=TEAMS[m.a];
   const M=mat(m.lh,m.la,true);const sc=[];for(let i=0;i<7;i++)for(let j=0;j<7;j++)sc.push([i,j,M[i][j]]);sc.sort((x,y)=>y[2]-x[2]);
   const tr=DATA.T.filter(t=>t.mid===m.id);
@@ -992,11 +1005,232 @@ function renderDrawer(){
     <div class="panel"><div class="eyebrow">Facteurs clés</div><div class="factors" style="margin-top:8px">${fac.map(([n,v,lo,hi])=>`<div><span style="font-size:12.5px">${esc(n)}</span><span class="fb"><i style="left:0;width:${clamp((v-lo)/(hi-lo),0,1)*100}%;background:var(--ac2)"></i></span></div>`).join('')}</div></div>
    </div>
    ${tr.length?`<div class="panel"><div class="eyebrow">Prédictions suivies</div>${tr.map(t=>`<div class="prow"><span>${esc(t.label)}</span><span class="num mu">cote ${od(t.odds)}</span><span class="num">${pc(t.p)}</span>${stPill(t.status)}</div>`).join('')}</div>`:''}
+   ${SAMPLE?`<div class="panel"><div class="row" style="justify-content:space-between"><div class="eyebrow">Analyse de l'IA</div><button class="btn" data-act="aiExplain:${m.id}">Analyser ce match avec l'IA</button></div><div id="aiOut" hidden></div></div>`:''}
+   ${m.status==='NS'?simPanel(m):''}
    <div class="panel"><div class="eyebrow">Cote « victoire ${esc(h.n)} » · intégrité</div>${spark(m.oh,600,60,lvl(m.risk)>=2)}${m.signals.length?`<p class="note">${m.signals.map(esc).join(' · ')}</p>`:''}</div>
-   ${GROUPS.map(g=>{const ss=m.sels.filter(s=>s.g===g);return`<div><h3 style="margin-bottom:6px">${g}</h3><div class="tw panel" style="padding:0"><table><thead><tr><th>Option</th><th class="r">Proba.</th><th class="r">Cote juste</th><th class="r">Meilleure</th><th class="r">Value</th><th>Confiance</th></tr></thead><tbody>${ss.map(s=>`<tr><td>${esc(s.label)}</td><td class="r"><span class="cp ${confCls(s.p)}">${pc(s.p)}</span></td><td class="r num">${od(s.fair)}</td><td class="r num">${od(s.best)}</td><td class="r num" style="color:${s.val>0?'var(--ok)':'var(--mu)'}">${s.val>0?'+':''}${dec(s.val*100)} %</td><td>${icB(s.ic)}</td></tr>`).join('')}</tbody></table></div></div>`}).join('')}
+   ${GROUPS.map(g=>{const ss=m.sels.filter(s=>s.g===g);return`<div><h3 style="margin-bottom:6px">${g}</h3><div class="tw panel" style="padding:0"><table><thead><tr><th>Option</th><th class="r">Proba.</th><th class="r">Cote juste</th><th class="r">Meilleure</th><th class="r">Value</th><th>Confiance</th><th></th></tr></thead><tbody>${ss.map(s=>`<tr><td>${esc(s.label)}</td><td class="r"><span class="cp ${confCls(s.p)}">${pc(s.p)}</span></td><td class="r num">${od(s.fair)}</td><td class="r num">${od(s.best)}</td><td class="r num" style="color:${s.val>0?'var(--ok)':'var(--mu)'}">${s.val>0?'+':''}${dec(s.val*100)} %</td><td>${icB(s.ic)}</td><td>${m.status==='NS'?`<button class="add" data-act="bet:${m.id}|${s.id}" aria-label="Ajouter à la bankroll" title="Ajouter à la bankroll">+</button>`:''}</td></tr>`).join('')}</tbody></table></div></div>`}).join('')}
    <p class="note">Probabilités pré-match du modèle. En direct, les prédictions live sont dans le menu « En direct ».</p>
   </div>`;
   d.hidden=false;const dw=d.querySelector('.dw');if(dw)dw.scrollTop=scroll;
+}
+
+/* ============ Bankroll : suivi des mises ============ */
+const bankNow=()=>S.bank.init+S.bets.reduce((s,b)=>s+(b.status==='V'?b.stake*(b.odds-1):b.status==='P'?-b.stake:0),0);
+const bankPending=()=>S.bets.filter(b=>b.status==='C').reduce((s,b)=>s+b.stake,0);
+function dayLoss(){const t0=Date.now()-24*H;return -S.bets.filter(b=>b.set&&b.set>t0).reduce((s,b)=>s+(b.status==='V'?b.stake*(b.odds-1):b.status==='P'?-b.stake:0),0)}
+function suggestStake(p,odds){
+  const cap=bankNow()*S.bank.maxPct/100;
+  const k=(p*odds-1)/(odds-1);
+  if(k>0)return{stake:Math.max(1,Math.min(cap,bankNow()*k*S.bank.kelly)),why:'¼ Kelly'.replace('¼',S.bank.kelly===.25?'¼':S.bank.kelly===.5?'½':'⅛')};
+  return{stake:Math.max(1,Math.min(cap,bankNow()*.01)),why:'mise plate 1 % (pas de value)'};
+}
+function addBet(legs,label){
+  if(dayLoss()>=S.bank.init*S.bank.dayLoss/100){toast('Limite de perte du jour atteinte : aucune nouvelle mise avant demain.','var(--ba)');return}
+  const p=legs.reduce((a,l)=>a*l.p,1),odds=+legs.reduce((a,l)=>a*l.odds,1).toFixed(2);
+  const sg=suggestStake(p,odds);
+  S.bets.unshift({id:'b'+Date.now().toString(36)+Math.floor(Math.random()*1e4),label,legs:legs.map(l=>({mid:l.mid,sp:l.sp,label:l.label,p:l.p,odds:l.odds,st:null})),p,odds,stake:+sg.stake.toFixed(2),why:sg.why,status:'C',at:Date.now(),set:null});
+  toast('Ajouté à la bankroll : '+label+' · mise '+dec(sg.stake,2)+' € ('+sg.why+')','var(--ac)');
+  save();renderNav();
+}
+function settleBets(){
+  let ch=false;
+  S.bets.forEach(b=>{
+    if(b.status!=='C')return;
+    const before=b.status;
+    b.legs.forEach(l=>{if(l.st)return;const m=MB(l.mid);if(!m||m.status==='NS'||!m.st)return;const r=evalSel(l.sp,m.st);if(r){l.st=r;ch=true}});
+    if(b.legs.some(l=>l.st==='P')){b.status='P';b.set=Date.now();ch=true}
+    else if(b.legs.every(l=>l.st)){const o=b.legs.reduce((a,l)=>a*(l.st==='R'?1:l.odds),1);b.odds=+o.toFixed(2);b.status=b.legs.every(l=>l.st==='R')?'R':'V';b.set=Date.now();ch=true}
+    if(before==='C'&&b.status!=='C')toast('Bankroll : '+b.label+' → '+{V:'gagné',P:'perdu',R:'remboursé'}[b.status],b.status==='V'?'var(--ok)':b.status==='P'?'var(--ba)':'var(--mu)');
+  });
+  if(ch)save();
+  return ch;
+}
+const selLeg=(m,s)=>({mid:m.id,sp:s.sp,label:s.label+' ('+TN(m.h)+' – '+TN(m.a)+')',p:s.p,odds:s.best});
+V.bankroll={head:()=>`<div class="ph"><div><div class="eyebrow">Bankroll</div><h2>Gérer son capital de paris</h2><p>Mises calculées avec une fraction du critère de Kelly, plafonnées, et une limite de perte quotidienne. Les paris se règlent seuls avec les résultats.</p></div></div>
+ <div class="panel row" style="gap:22px">
+  <label class="lbl" for="bInit">Capital de départ (€)<input id="bInit" class="inp" type="number" min="10" step="10" value="${S.bank.init}" data-in="bank.init" style="width:130px"></label>
+  <label class="lbl" for="bKelly">Fraction de Kelly<select id="bKelly" class="inp" data-in="bank.kelly">${[[.125,'⅛ (prudent)'],[.25,'¼ (recommandé)'],[.5,'½ (agressif)']].map(([v,n])=>`<option value="${v}"${S.bank.kelly===v?' selected':''}>${n}</option>`).join('')}</select></label>
+  <label class="lbl" for="bMax"><span>Mise max. : <b id="bank.maxPctV" style="color:var(--tx)">${S.bank.maxPct} %</b> du capital</span><input id="bMax" type="range" min="1" max="10" value="${S.bank.maxPct}" data-in="bank.maxPct"></label>
+  <label class="lbl" for="bLoss"><span>Perte max. par jour : <b id="bank.dayLossV" style="color:var(--tx)">${S.bank.dayLoss} %</b></span><input id="bLoss" type="range" min="2" max="30" value="${S.bank.dayLoss}" data-in="bank.dayLoss"></label>
+ </div>`,
+dyn:()=>{
+  const now=bankNow(),pend=bankPending(),settled=S.bets.filter(b=>b.status!=='C').slice().reverse();
+  let cur=S.bank.init,peak=cur,dd=0;const curve=[cur];
+  settled.forEach(b=>{cur+=b.status==='V'?b.stake*(b.odds-1):b.status==='P'?-b.stake:0;curve.push(+cur.toFixed(2));peak=Math.max(peak,cur);dd=Math.max(dd,(peak-cur)/peak)});
+  const staked=settled.reduce((s,b)=>s+b.stake,0),profit=now-S.bank.init;
+  const dl=dayLoss(),lim=S.bank.init*S.bank.dayLoss/100;
+  return`<div class="kpis"><div class="kpi"><b>${dec(now,2)} €</b><span>capital actuel</span></div><div class="kpi"><b style="color:${profit>=0?'var(--ok)':'var(--ba)'}">${profit>=0?'+':''}${dec(profit,2)} €</b><span>résultat · ROI ${staked?dec(profit/staked*100):'0,0'} %</span></div><div class="kpi"><b>${dec(pend,2)} €</b><span>engagés (${S.bets.filter(b=>b.status==='C').length} paris en cours)</span></div><div class="kpi"><b style="color:var(--or)">${dec(dd*100)} %</b><span>baisse max. depuis un sommet</span></div><div class="kpi"><b>${dec(Math.max(0,dl),2)} / ${dec(lim,0)} €</b><span>perte du jour / limite</span></div></div>
+  ${dl>=lim?'<div class="warn">Limite de perte du jour atteinte. Faites une pause : les nouvelles mises sont bloquées pendant 24 h.</div>':''}
+  <div class="panel"><div class="eyebrow">Évolution du capital</div>${curve.length>1?spark(curve,900,90):'<p class="note">La courbe apparaîtra après le premier pari réglé.</p>'}</div>
+  <div class="tw panel" style="padding:0"><table><thead><tr><th>Pari</th><th class="r">Proba.</th><th class="r">Cote</th><th class="r">Mise</th><th class="r">Gain / perte</th><th>Statut</th><th></th></tr></thead><tbody>
+  ${S.bets.map(b=>`<tr><td><div style="font-weight:600">${esc(b.label)}</div>${b.legs.length>1?`<div class="mu" style="font-size:12px">${b.legs.map(l=>(l.st?{V:'✓',P:'✗',R:'↩'}[l.st]+' ':'· ')+esc(l.label)).join('<br>')}</div>`:''}<div class="mu" style="font-size:11.5px">${hm(b.at)} · ${esc(b.why)}</div></td><td class="r num">${pc(b.p)}</td><td class="r num">${od(b.odds)}</td><td class="r num">${dec(b.stake,2)} €</td><td class="r num" style="color:${b.status==='V'?'var(--ok)':b.status==='P'?'var(--ba)':'var(--mu)'}">${b.status==='V'?'+'+dec(b.stake*(b.odds-1),2):b.status==='P'?'−'+dec(b.stake,2):b.status==='R'?'0,00':'…'}</td><td>${stPill(b.status)}</td><td>${b.status==='C'?`<button class="lock" data-act="delBet:${b.id}" aria-label="Retirer">✕</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">Aucun pari suivi. Ajoutez-en depuis un coupon, le Combo, les Value bets ou une fiche match (bouton +).</td></tr>'}</tbody></table></div>
+  <p class="note">Argent fictif dans cette démo. Ne misez jamais plus que ce que vous pouvez vous permettre de perdre.</p>`;
+}};
+
+/* ============ Alertes personnalisées ============ */
+function checkRules(){
+  const hits=[];
+  S.rules.filter(r=>r.on).forEach(r=>{
+    DATA.matches.filter(m=>m.status==='NS'&&(r.lg==='all'||m.lg===r.lg)&&lvl(m.risk)<=1).forEach(m=>m.sels.forEach(s=>{
+      if((r.g==='all'||s.g===r.g)&&s.p>=r.minP/100&&s.p<=.98&&s.val*100>=r.minVal&&s.ic>=r.minIC){
+        const k=r.id+'|'+s.id;if(S.seen.has(k))return;S.seen.add(k);
+        hits.push({t:Date.now(),rule:r.name,mid:m.id,label:s.label,p:s.p,val:s.val,odds:s.best,ic:s.ic});
+      }}));
+  });
+  if(hits.length){S.hits=[...hits,...S.hits].slice(0,60);if(S.ready)toast('Alerte « '+hits[0].rule+' » : '+hits[0].label+' '+pc(hits[0].p)+(hits.length>1?' (+'+(hits.length-1)+')':''),'var(--info)')}
+}
+V.alerts={head:()=>`<div class="ph"><div><div class="eyebrow">Alertes personnalisées</div><h2>Être prévenu dès qu'une occasion apparaît</h2><p>Chaque règle est vérifiée à chaque mise à jour du marché (toutes les 15 s). Les matchs en alerte intégrité orange ou rouge sont ignorés.</p></div></div>
+ <form class="panel row" id="ruleForm" style="gap:16px;align-items:flex-end">
+  <label class="lbl" for="rName">Nom<input id="rName" class="inp" value="Value Ligue Atlas" maxlength="40" style="width:170px"></label>
+  <label class="lbl" for="rLg">Compétition<select id="rLg" class="inp"><option value="all">Toutes</option>${LEAGUES.map(l=>`<option value="${l.id}">${l.n}</option>`).join('')}</select></label>
+  <label class="lbl" for="rG">Marché<select id="rG" class="inp"><option value="all">Tous</option>${GROUPS.map(g=>`<option>${g}</option>`).join('')}</select></label>
+  <label class="lbl" for="rP">Proba. min. (%)<input id="rP" class="inp" type="number" min="50" max="98" value="70" style="width:90px"></label>
+  <label class="lbl" for="rV">Value min. (%)<input id="rV" class="inp" type="number" min="-20" max="30" step="0.5" value="3" style="width:90px"></label>
+  <label class="lbl" for="rIC">Confiance min.<input id="rIC" class="inp" type="number" min="0" max="100" value="60" style="width:90px"></label>
+  <button class="btn pri" type="submit">Créer l'alerte</button>
+ </form>`,
+dyn:()=>`<div class="grid2" style="align-items:start">
+  <div><h3 style="margin-bottom:8px">Règles (${S.rules.length})</h3><div class="list">${S.rules.map(r=>`<div class="cp-item" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="teams"><span style="font-weight:600">${esc(r.name)}</span><span class="mu" style="font-size:12px">${r.lg==='all'?'Toutes compétitions':LGN(r.lg)} · ${r.g==='all'?'tous marchés':r.g} · ≥ ${r.minP} % · value ≥ ${r.minVal} % · IC ≥ ${r.minIC}</span></div><button class="chip${r.on?' on':''}" data-act="ruleOn:${r.id}">${r.on?'Active':'En pause'}</button><button class="lock" data-act="ruleDel:${r.id}" aria-label="Supprimer">✕</button></div>`).join('')||'<div class="empty">Aucune règle.</div>'}</div></div>
+  <div><h3 style="margin-bottom:8px">Déclenchements (${S.hits.length})</h3><div class="list">${S.hits.slice(0,30).map(h=>{const m=MB(h.mid);return m?`<div class="mrow" data-act="open:${m.id}" role="button" tabindex="0"><span class="tm">${hm(h.t)}</span><div class="teams"><span style="font-weight:600">${esc(h.label)}</span><span class="mu" style="font-size:12px">${esc(TN(m.h))} – ${esc(TN(m.a))} · ${esc(h.rule)}</span></div><div class="pick"><span class="cp ${confCls(h.p)}">${pc(h.p)}</span><em>cote ${od(h.odds)} · ${h.val>=0?'+':''}${dec(h.val*100)} %</em></div><span></span></div>`:''}).join('')||'<div class="empty">Rien pour l\'instant.</div>'}</div></div></div>`};
+
+/* ============ Simulateur « et si » ============ */
+function simModel(m){
+  const s=S.sim,x=s.red?s.red/93:1;
+  let lh=m.lh*(1+s.attH/100)*(s.absH?.88:1)*(s.rain?.92:1),la=m.la*(1+s.attA/100)*(s.absA?.88:1)*(s.rain?.92:1);
+  if(s.red){lh*=x+(1-x)*.68;la*=x+(1-x)*1.22}
+  const stat={...m.stat,corners:m.stat.corners*(s.rain?1.06:1),cards:m.stat.cards+(s.red?.6:0)+(s.rain?.2:0)};
+  return{lh,la,stat};
+}
+const SIMK=[{t:'res',v:'1'},{t:'res',v:'X'},{t:'res',v:'2'},{t:'tot',s:'goals',o:'O',l:2.5},{t:'btts',v:true},{t:'tot',s:'corners',o:'O',l:9.5},{t:'tot',s:'cards',o:'O',l:3.5}];
+function simOut(m){
+  const m2=simModel(m);
+  return`<div class="row" style="gap:18px;font-size:13px"><span>λ ${esc(TN(m.h))} : <b class="num">${dec(m.lh,2)} → ${dec(m2.lh,2)}</b></span><span>λ ${esc(TN(m.a))} : <b class="num">${dec(m.la,2)} → ${dec(m2.la,2)}</b></span></div>
+  <div class="tw"><table><thead><tr><th>Marché</th><th class="r">Modèle</th><th class="r">Scénario</th><th class="r">Écart</th></tr></thead><tbody>${SIMK.map(sp=>{const a=probSel(sp,m,ZERO),b=probSel(sp,m2,ZERO),d=(b-a)*100;return`<tr><td>${esc(labelOf(sp,m))}</td><td class="r num">${pc(a)}</td><td class="r"><span class="cp ${confCls(b)}">${pc(b)}</span></td><td class="r num" style="color:${Math.abs(d)<.5?'var(--mu)':d>0?'var(--ok)':'var(--ba)'}">${d>0?'+':''}${dec(d)} pts</td></tr>`}).join('')}</tbody></table></div>`;
+}
+function simPanel(m){
+  const s=S.sim;
+  return`<div class="panel" style="display:flex;flex-direction:column;gap:10px"><div class="eyebrow">Simulateur « et si »</div>
+  <div class="row" style="gap:18px">
+   <label class="lbl" for="sAttH"><span>Forme offensive ${esc(TN(m.h))} : <b id="sim.attHV" style="color:var(--tx)">${s.attH} %</b></span><input id="sAttH" type="range" min="-30" max="30" value="${s.attH}" data-in="sim.attH"></label>
+   <label class="lbl" for="sAttA"><span>Forme offensive ${esc(TN(m.a))} : <b id="sim.attAV" style="color:var(--tx)">${s.attA} %</b></span><input id="sAttA" type="range" min="-30" max="30" value="${s.attA}" data-in="sim.attA"></label>
+   <label class="lbl" for="sRed"><span>Carton rouge ${esc(TN(m.h))} à la <b id="sim.redV" style="color:var(--tx)">${s.red||'–'}</b>e min.</span><input id="sRed" type="range" min="0" max="85" step="5" value="${s.red}" data-in="sim.red"></label>
+  </div>
+  <div class="row" style="gap:16px;font-size:13px">
+   <label class="row" style="gap:6px"><input type="checkbox" id="sAbsH" data-in="sim.absH"${s.absH?' checked':''}> Meilleur buteur ${esc(TN(m.h))} absent</label>
+   <label class="row" style="gap:6px"><input type="checkbox" id="sAbsA" data-in="sim.absA"${s.absA?' checked':''}> Meilleur buteur ${esc(TN(m.a))} absent</label>
+   <label class="row" style="gap:6px"><input type="checkbox" id="sRain" data-in="sim.rain"${s.rain?' checked':''}> Forte pluie</label>
+   <button class="chip" data-act="simReset">Réinitialiser</button>
+  </div>
+  <div id="simOut">${simOut(m)}</div></div>`;
+}
+
+/* ============ Comparateur d'équipes (radar) ============ */
+function radar(A,B){
+  const ks=['xg','shots','sot','corners','assists','tackles','fouls','cards'],N=ks.length,cx=150,cy=130,r=95;
+  const avg=(t,k)=>t.h[k].f.reduce((s,v)=>s+v,0)/10;
+  const mx=Object.fromEntries(ks.map(k=>[k,Math.max(...Object.values(TEAMS).map(t=>avg(t,k)))||1]));
+  const pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/N;return[cx+Math.cos(a)*r*f,cy+Math.sin(a)*r*f]};
+  const poly=t=>ks.map((k,i)=>pt(i,avg(t,k)/mx[k]).map(v=>v.toFixed(1)).join(',')).join(' ');
+  return`<svg viewBox="0 0 300 265" width="100%" style="max-width:340px" role="img" aria-label="Comparaison">
+  ${[.25,.5,.75,1].map(f=>`<polygon points="${ks.map((_,i)=>pt(i,f).join(',')).join(' ')}" fill="none" stroke="var(--ln)"/>`).join('')}
+  ${ks.map((k,i)=>{const[x,y]=pt(i,1);const[lx,ly]=pt(i,1.18);return`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--ln)"/><text x="${lx}" y="${ly}" font-size="10" text-anchor="middle" dominant-baseline="middle" fill="var(--mu)">${METRICS.find(M=>M.k===k).n}</text>`}).join('')}
+  <polygon points="${poly(A)}" fill="var(--ac)" fill-opacity=".18" stroke="var(--ac)" stroke-width="2"/>
+  <polygon points="${poly(B)}" fill="var(--ac2)" fill-opacity=".18" stroke="var(--ac2)" stroke-width="2"/></svg>
+  <div class="legend"><span style="color:var(--ac)">■ ${esc(A.n)}</span><span style="color:var(--ac2)">■ ${esc(B.n)}</span></div>`;
+}
+function cmpPanel(sel){
+  const A=TEAMS[sel];const bId=S.cmpB&&TEAMS[S.cmpB]&&S.cmpB!==sel?S.cmpB:Object.keys(TEAMS).find(id=>id!==sel&&TEAMS[id].lg===A.lg);const B=TEAMS[bId];
+  const h2h=DATA.matches.filter(m=>((m.h===sel&&m.a===bId)||(m.h===bId&&m.a===sel)));
+  return`<div class="panel"><div class="row" style="justify-content:space-between"><h3>Comparateur</h3><label class="lbl" for="cmpB">Comparer avec<select id="cmpB" class="inp" data-in="cmpB">${Object.values(TEAMS).filter(t=>t.id!==sel).map(t=>`<option value="${t.id}"${t.id===bId?' selected':''}>${esc(t.n)}</option>`).join('')}</select></label></div>
+  <div style="display:flex;justify-content:center">${radar(A,B)}</div>
+  <p class="note">Moyennes sur les 10 derniers matchs, ramenées au meilleur total de toutes les ligues. Elo ${A.elo} contre ${B.elo}.${h2h.length?' Confrontation au calendrier : '+h2h.map(m=>dayLbl(m.ko)).join(', ')+'.':''}</p></div>`;
+}
+
+/* ============ Assistant IA (Claude) ============ */
+let SAMPLE=null,SAMPLE_TOOLS=false,AICTL=null;
+try{window.claude?.use?.('sample').then(async s=>{SAMPLE=s;if(s){try{const l=await s.limits();SAMPLE_TOOLS=!!l?.tools}catch(e){}}if(S.tab==='assistant')render();if(S.drawer)renderDrawer()}).catch(()=>{})}catch(e){}
+const AI_ERR={not_granted:'Accès à Claude refusé pour cette page.',sampling_disabled:'Claude n\'est pas disponible pour ce compte.',rate_limited:'Trop de demandes : réessayez dans un moment.',session_expired:'Reconnectez-vous à Claude pour continuer.',refused:'Claude a refusé cette demande : reformulez-la.',empty_completion:'Réponse vide : reformulez plus simplement.',prompt_too_large:'Demande trop longue : raccourcissez-la.'};
+const aiErr=e=>AI_ERR[e?.code]||'La réponse a été interrompue. Réessayez.';
+const mdLite=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#{1,3} (.+)$/gm,'<b>$1</b>');
+function matchBrief(m){
+  const bp=bestPick(m);
+  return{id:m.id,match:TN(m.h)+' – '+TN(m.a),competition:LGN(m.lg),coup_envoi:dayLbl(m.ko)+' '+hm(m.ko),statut:{NS:'à venir',LIVE:'en direct',FT:'terminé'}[m.status],
+    score:m.st&&m.status!=='NS'?m.st.hg+'-'+m.st.ag+(m.status==='LIVE'?' ('+Math.floor(m.st.minute)+'e)':''):null,
+    meilleure_prediction:bp?{option:bp.label,proba:Math.round(bp.p*100),cote:bp.best,confiance:Math.round(bp.ic)}:null,integrite:LVN[lvl(m.risk)]+' ('+m.risk+'/100)'};
+}
+function matchDetail(m){
+  const h=TEAMS[m.h],a=TEAMS[m.a];
+  return{...matchBrief(m),buts_attendus:{[h.n]:+m.lh.toFixed(2),[a.n]:+m.la.toFixed(2)},classement:{[h.n]:h.pos+'e',[a.n]:a.pos+'e'},enjeu:m.stake.label+' : '+m.stake.txt,absences:{[h.n]:h.abs,[a.n]:a.abs},arbitre:REFS[m.ref],
+    signaux_integrite:m.signals,
+    marches:m.sels.filter(s=>s.p>=.5&&s.p<=.98).sort((x,y)=>y.ic-x.ic).slice(0,18).map(s=>({option:s.label,proba:Math.round(s.p*100),cote_juste:+s.fair.toFixed(2),meilleure_cote:s.best,value_pct:+(s.val*100).toFixed(1),confiance:Math.round(s.ic)})),
+    live:m.status==='LIVE'?{minute:Math.floor(m.st.minute),xg:[+m.st.xgH.toFixed(2),+m.st.xgA.toFixed(2)],tirs_cadres:[m.st.sH,m.st.sot-m.st.sH],corners:[m.st.cH,m.st.corners-m.st.cH],cartons:m.st.cards,predictions_live:(m.live||[]).slice(0,10).map(s=>({option:s.label,proba:Math.round(s.p*100)}))}:null,
+    predictions_suivies:DATA.T.filter(t=>t.mid===m.id).map(t=>({option:t.label,proba:Math.round(t.p*100),statut:{A:'en attente',C:'en cours',V:'validé',P:'perdu',R:'remboursé'}[t.status]}))};
+}
+const findMatches=q=>{q=String(q||'').toLowerCase();return DATA.matches.filter(m=>!q||matchText(m).includes(q))};
+const AI_TOOLS=[
+ {name:'chercher_matchs',description:'Liste des matchs (max 15) avec meilleure prédiction, statut et niveau intégrité. Filtre texte optionnel (équipe, compétition) et statut (a_venir, en_direct, termine).',
+  inputSchema:{type:'object',properties:{texte:{type:'string'},statut:{type:'string',enum:['a_venir','en_direct','termine']}}},
+  execute:i=>{const st={a_venir:'NS',en_direct:'LIVE',termine:'FT'}[String(i.statut||'')];return findMatches(i.texte).filter(m=>!st||m.status===st).filter(m=>m.status!=='FT'||st==='FT').slice(0,15).map(matchBrief)}},
+ {name:'detail_match',description:'Fiche complète d\'un match : buts attendus, enjeu, absences, marchés avec probabilités, cotes, value et confiance, stats live, prédictions suivies. Prend l\'id renvoyé par chercher_matchs.',
+  inputSchema:{type:'object',properties:{id:{type:'string'}},required:['id']},execute:i=>{const m=MB(String(i.id));if(!m)throw new Error('Match introuvable');return matchDetail(m)}},
+ {name:'value_bets',description:'Les 12 meilleurs value bets à venir (probabilité, meilleure cote, value en %, confiance).',
+  execute:()=>valueBets().slice(0,12).map(({m,s})=>({match:TN(m.h)+' – '+TN(m.a),id:m.id,option:s.label,proba:Math.round(s.p*100),cote:s.best,value_pct:+(s.val*100).toFixed(1),confiance:Math.round(s.ic)}))},
+ {name:'composer_coupon',description:'Compose un coupon avec l\'algorithme de l\'app (une sélection par match, intégrité verte/jaune). taille 1-20, confiance_min 70-98, mode surete|equilibre|rendement, horizon jour|avenir.',
+  inputSchema:{type:'object',properties:{taille:{type:'number'},confiance_min:{type:'number'},mode:{type:'string',enum:['surete','equilibre','rendement']},horizon:{type:'string',enum:['jour','avenir']}},required:['taille']},
+  execute:i=>{const n=clamp(Math.round(Number(i.taille)||3),1,20),mn=clamp(Number(i.confiance_min)||75,70,98);const it=generate(n,{scope:i.horizon==='avenir'?'avenir':'jour',min:mn/100,max:.98,mode:['surete','equilibre','rendement'].includes(i.mode)?i.mode:'surete'});
+   return{selections:it.map(x=>{const m=MB(x.mid);return{match:TN(m.h)+' – '+TN(m.a),coup_envoi:hm(m.ko),option:x.label,proba:Math.round(x.p*100),cote:x.odds}}),proba_combinee:Math.round(it.reduce((a,x)=>a*x.p,1)*100),cote_totale:+it.reduce((a,x)=>a*x.odds,1).toFixed(2)}}},
+ {name:'alertes_integrite',description:'Matchs avec signaux de marché inhabituels (niveau, score, signaux, derniers mouvements).',
+  execute:()=>DATA.matches.filter(m=>m.status!=='FT'&&lvl(m.risk)>=1).sort((a,b)=>b.risk-a.risk).slice(0,10).map(m=>({...matchBrief(m),signaux:m.signals,mouvements:m.ilog.slice(-3).map(e=>e.txt+' '+(e.pct>0?'+':'')+e.pct.toFixed(1)+' % ('+SEVN[e.sev]+')')}))},
+ {name:'stats_equipe',description:'Moyennes sur 10 matchs (pour / contre) d\'une équipe pour corners, tirs, tirs cadrés, cartons, fautes, hors-jeux, passes décisives, tacles, touches, xG, plus classement et Elo.',
+  inputSchema:{type:'object',properties:{equipe:{type:'string'}},required:['equipe']},
+  execute:i=>{const q=String(i.equipe||'').toLowerCase();const t=Object.values(TEAMS).find(t=>t.n.toLowerCase().includes(q));if(!t)throw new Error('Équipe introuvable');
+   return{equipe:t.n,competition:LGN(t.lg),classement:t.pos,elo:t.elo,moyennes:Object.fromEntries(METRICS.map(M=>[M.n,{pour:+(t.h[M.k].f.reduce((s,v)=>s+v,0)/10).toFixed(2),contre:+(t.h[M.k].a.reduce((s,v)=>s+v,0)/10).toFixed(2)}]))}}},
+ {name:'performance_modele',description:'Performance réelle des prédictions suivies : validées, perdues, réussite, ROI, calibration par tranche.',
+  execute:()=>{const p=perf(DATA.T);return{validees:p.v,perdues:p.p,remboursees:p.r,reussite_pct:Math.round(p.hit*100),roi_pct:+(p.roi*100).toFixed(1)}}}
+];
+const AI_RULES=`Tu es l'analyste d'OMNISCORE, une application d'analyse et de prédiction football. Réponds en français, de façon claire, structurée et concise (listes courtes, chiffres précis).
+Règles :
+- Appuie-toi uniquement sur les données de l'application (outils ou contexte fourni). N'invente aucun chiffre, joueur ou information.
+- Ce prototype utilise des équipes et des cotes simulées : si on te demande des matchs réels, dis-le.
+- Une probabilité n'est jamais une certitude. Donne toujours le pourcentage, la cote et le niveau de confiance, et rappelle le risque pour les combinés.
+- Pour l'intégrité, parle de « signaux de marché inhabituels », jamais de match truqué avéré.
+- Si l'utilisateur semble perdre le contrôle de ses paris, recommande une pause et des limites.`;
+function aiContext(){
+  const up=upcoming(30).map(m=>matchBrief(m)).filter(x=>x.meilleure_prediction).slice(0,20);
+  return'Données actuelles de l\'application (JSON) :\n'+JSON.stringify({heure:hm(Date.now()),matchs_a_venir:up,en_direct:DATA.matches.filter(m=>m.status==='LIVE').map(matchBrief),value_bets:AI_TOOLS[2].execute(),alertes_integrite:DATA.matches.filter(m=>m.status!=='FT'&&lvl(m.risk)>=1).map(matchBrief).slice(0,8),performance:AI_TOOLS[6].execute()});
+}
+async function askAI(text){
+  text=String(text||'').trim();if(!text||!SAMPLE||S.aiBusy)return;
+  S.chat.push({role:'user',content:text});S.chat.push({role:'assistant',content:'',pending:true});S.aiBusy=true;render();
+  const bubble=()=>document.querySelector('#chat .msg-a:last-child .bd2');
+  AICTL=new AbortController();
+  const turns=S.chat.filter(t=>!t.pending&&t.content).slice(-12).map(t=>({role:t.role,content:t.content}));
+  const input=[{role:'user',content:AI_RULES+(SAMPLE_TOOLS?'\nUtilise les outils pour consulter les données avant de répondre.':'\n\n'+aiContext())},{role:'assistant',content:'Compris. Quelle est votre question ?'},...turns];
+  const last=S.chat[S.chat.length-1];
+  try{
+    const opts={signal:AICTL.signal,onText:({text})=>{last.content=text;const b=bubble();if(b)b.innerHTML=mdLite(text)}};
+    if(SAMPLE_TOOLS)opts.tools=AI_TOOLS.map(t=>({...t,execute:(i,c)=>{const b=bubble();if(b&&!last.content)b.textContent='Consultation des données : '+t.name.replace(/_/g,' ')+'…';return t.execute(i||{},c)}}));else opts.cache=false;
+    const r=await SAMPLE(input,opts);last.content=r.text;if(r.truncated)last.content+='\n\n(Réponse coupée : posez une question plus précise.)';
+  }catch(e){last.content=(e&&e.text)||'';if(e?.code!=='cancelled')last.err=aiErr(e);if(['not_granted','sampling_disabled','not_declared','capability_disabled'].includes(e?.code))SAMPLE=null}
+  delete last.pending;S.aiBusy=false;AICTL=null;save();if(S.tab==='assistant')render();
+}
+V.assistant={head:()=>`<div class="ph"><div><div class="eyebrow">Assistant IA</div><h2>Posez vos questions à l'analyste</h2><p>L'assistant consulte les données de l'application (matchs, marchés, value bets, intégrité, stats) avant de répondre. Chaque question utilise votre propre compte Claude.</p></div>${S.chat.length?'<button class="btn" data-act="aiClear">Nouvelle conversation</button>':''}</div>`,
+dyn:()=>{
+  if(!SAMPLE)return`<div class="panel"><p style="margin:0">L'assistant n'est pas disponible dans cette vue. Il fonctionne quand la page est ouverte dans Claude et que vous autorisez l'accès.</p></div>`;
+  const sug=['Compose-moi le coupon de 3 le plus sûr pour les prochaines heures et explique chaque choix','Quels value bets sont les plus solides en ce moment ?','Explique-moi les alertes intégrité en cours','Quel match en direct a le plus de chances d\'avoir un autre but ?','Compare les corners de Kingsmere City et Brackwell Rovers'];
+  return`<div id="chat" class="panel" style="display:flex;flex-direction:column;gap:12px">
+   ${S.chat.length?S.chat.map(t=>t.role==='user'?`<div class="msg-u"><div class="bd2">${esc(t.content)}</div></div>`:`<div class="msg-a"><div class="bd2">${t.pending&&!t.content?'Réflexion en cours…':mdLite(t.content)}</div>${t.err?`<div class="note" style="color:var(--ba)">${esc(t.err)}</div>`:''}</div>`).join(''):`<div class="chips">${sug.map((s,i)=>`<button class="chip" data-act="aiSug:${i}">${esc(s)}</button>`).join('')}</div>`}
+  </div>
+  <form id="aiForm" class="row"><input id="aiIn" class="inp" style="flex:1;min-width:200px" placeholder="Ex. : quel est le meilleur pari corners ce soir ?" maxlength="600" autocomplete="off"${S.aiBusy?' disabled':''}>${S.aiBusy?'<button class="btn" type="button" data-act="aiStop">Arrêter</button>':'<button class="btn pri" type="submit">Envoyer</button>'}</form>
+  <p class="note">L'IA peut se tromper. Aucune réponse n'est une garantie de gain.</p>`;
+}};
+V.assistant.sug=['Compose-moi le coupon de 3 le plus sûr pour les prochaines heures et explique chaque choix','Quels value bets sont les plus solides en ce moment ?','Explique-moi les alertes intégrité en cours','Quel match en direct a le plus de chances d\'avoir un autre but ?','Compare les corners de Kingsmere City et Brackwell Rovers'];
+async function explainMatch(m){
+  const out=$('#aiOut');if(!out||!SAMPLE)return;
+  out.hidden=false;out.innerHTML='<span class="mu">Analyse en cours…</span>';
+  const prompt=AI_RULES+'\n\nRédige une analyse experte de ce match en 5 parties courtes : contexte et enjeu, forces en présence, lecture du marché et intégrité, les 3 options les plus solides (proba, cote, confiance), et un avertissement de risque. Maximum 220 mots.\n\n'+JSON.stringify(matchDetail(m));
+  try{const r=await SAMPLE(prompt,{onText:({text})=>{out.innerHTML=mdLite(text)}});out.innerHTML=mdLite(r.text)}
+  catch(e){out.innerHTML=(e?.text?mdLite(e.text)+'<br>':'')+`<span class="note" style="color:var(--ba)">${esc(aiErr(e))}</span>`}
 }
 
 /* ============ Notifications ============ */
@@ -1033,6 +1267,26 @@ document.addEventListener('click',e=>{
     case 'comboN':S.comboN=+arg;render();break;
     case 'comboMode':S.comboMode=arg;render();break;
     case 'jPer':case 'jSt':case 'iLvl':case 'stM':S[act]=arg;render();break;
+    case 'bet':{const[mid,sid]=arg.split('|');const m=MB(mid);const sl=m&&m.sels.find(x=>x.id===sid);if(sl&&m.status==='NS')addBet([selLeg(m,sl)],sl.label+' ('+TN(m.h)+' – '+TN(m.a)+')');break}
+    case 'betCoupon':{const it=S.coupon&&S.coupon.items;if(it&&it.length)addBet(it.map(i=>{const m=MB(i.mid);return{mid:i.mid,sp:(m.sels.find(x=>x.key===i.key)||{}).sp,label:i.label+' ('+TN(m.h)+' – '+TN(m.a)+')',p:i.p,odds:i.odds}}).filter(l=>l.sp),'Coupon de '+it.length);break}
+    case 'betCombo':{const it=generate(S.comboN,{scope:S.comboScope,min:S.comboMin/100,max:.98,mode:S.comboMode});if(it.length)addBet(it.map(i=>{const m=MB(i.mid);return{mid:i.mid,sp:m.sels.find(x=>x.id===i.selId).sp,label:i.label+' ('+TN(m.h)+' – '+TN(m.a)+')',p:i.p,odds:i.odds}}),'Combo de '+it.length);break}
+    case 'delBet':S.bets=S.bets.filter(b=>b.id!==arg);save();renderDyn();break;
+    case 'ruleOn':{const r=S.rules.find(r=>r.id===arg);if(r){r.on=!r.on;save();renderDyn()}break}
+    case 'ruleDel':S.rules=S.rules.filter(r=>r.id!==arg);save();renderDyn();break;
+    case 'aiSug':askAI(V.assistant.sug[+arg]);break;
+    case 'aiStop':AICTL?.abort();break;
+    case 'aiClear':S.chat=[];save();render();break;
+    case 'aiExplain':{const m=MB(arg);if(m)explainMatch(m);break}
+    case 'simReset':S.sim={attH:0,attA:0,red:0,absH:false,absA:false,rain:false};renderDrawer();break;
+  }
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(e.target.id==='aiForm'){const i=$('#aiIn');const v=i.value;i.value='';askAI(v)}
+  if(e.target.id==='ruleForm'){
+    const g=id=>document.getElementById(id).value;
+    S.rules.push({id:'r'+Date.now().toString(36),name:(g('rName')||'Alerte').slice(0,40),lg:g('rLg'),g:g('rG'),minP:clamp(+g('rP')||70,50,98),minVal:clamp(+g('rV')||0,-20,30),minIC:clamp(+g('rIC')||0,0,100),on:true});
+    checkRules();save();renderDyn();toast('Alerte créée.','var(--info)');
   }
 });
 document.addEventListener('keydown',e=>{
@@ -1042,6 +1296,11 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('input',e=>{
   const k=e.target.dataset.in;if(!k)return;
   const el=e.target;const v=el.type==='checkbox'?el.checked:el.type==='range'?+el.value:el.value;
+  if(k.includes('.')){const[o,f]=k.split('.');let x=v;if(o==='bank'){x=Number(v);if(f==='init'&&!(x>=10))return}S[o][f]=x;
+    const lab=document.getElementById(k+'V');if(lab)lab.textContent=f==='red'?(x||'–'):x+' %';
+    if(o==='sim'){const m=MB(S.drawer);const so=$('#simOut');if(m&&so)so.innerHTML=simOut(m)}else{save();renderDyn()}
+    return}
+  if(k==='cmpB'){S.cmpB=v;renderDyn();return}
   S[k]=v;
   const lab=$('#'+k+'V');if(lab)lab.textContent=v+(k==='comboN'?'':' %');
   if(k==='comboN')document.querySelectorAll('[data-act^="comboN:"]').forEach(b=>b.classList.toggle('on',b.dataset.act==='comboN:'+v));
@@ -1050,6 +1309,8 @@ document.addEventListener('input',e=>{
 
 /* ============ Démarrage ============ */
 load();
+if(!S.rules.length)S.rules.push({id:'r0',name:'Value solide',lg:'all',g:'all',minP:70,minVal:3,minIC:60,on:true});
+checkRules();
 S.ready=true;
 render();
 tick();
