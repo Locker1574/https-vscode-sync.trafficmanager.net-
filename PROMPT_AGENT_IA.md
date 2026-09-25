@@ -350,7 +350,7 @@ IC = 100 × p_cal^α × A^β × D^γ × M^δ × (1 − R)^ε × (1 − V)^ζ
 | `p_cal` | Probabilité calibrée de l'ensemble de modèles | sortie du méta-modèle après calibration isotonique, bornée entre 0,01 et 0,99 |
 | `A` | Accord entre modèles | `1 − écart-type des probabilités des modèles / 0,5` |
 | `D` | Complétude des données | part des variables clés disponibles (compos confirmées, xG, absences, arbitre…) |
-| `M` | Accord avec le marché | `1 − |p_modèle − p_marché_sans_marge|`, avec Pinnacle comme référence |
+| `M` | Accord avec le marché | `1 − abs(p_modèle − p_marché_sans_marge)`, avec Pinnacle comme référence |
 | `R` | Risque intégrité | score du menu Intégrité ramené entre 0 et 1 |
 | `V` | Volatilité | instabilité de la prédiction sur les dernières heures (live : dernières minutes) |
 
