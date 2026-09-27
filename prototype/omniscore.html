@@ -602,7 +602,7 @@ function applyCloud(u){
   if(Array.isArray(u.favs))S.favs=new Set(u.favs);if(Array.isArray(u.favTeams))S.favTeams=new Set(u.favTeams);
   if(Array.isArray(u.bets))S.bets=u.bets;if(u.bank)S.bank={...S.bank,...u.bank};if(Array.isArray(u.rules))S.rules=u.rules;
   if(Array.isArray(u.chat))S.chat=u.chat;if(Array.isArray(u.realCoupons))S.realCoupons=u.realCoupons;
-  S.pausedUntil=Math.max(S.pausedUntil||0,+u.pausedUntil||0);
+  S.pausedUntil=+u.pausedUntil||0; // le compte fait foi (une pause levée ne revient pas)
 }
 function renderSync(){
   const b=$('#syncBadge');if(!b)return;const on=!!CLOUD.ref;
@@ -852,7 +852,10 @@ function refreshItem(it){const m=MB(it.mid);const s=m&&m.status==='NS'&&m.sels.f
 /* ============ Jeu responsable : pause ============ */
 const paused=()=>(S.pausedUntil||0)>Date.now();
 const pauseDate=()=>new Date(S.pausedUntil).toLocaleDateString('fr-FR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-const pauseBox=()=>`<div class="warn">Pause jeu responsable active jusqu'au ${pauseDate()} : les coupons, le Combo et les mises sont désactivés. La pause ne peut pas être raccourcie.</div>`;
+const unpauseCtl=()=>S.unpauseAsk
+  ?`<span class="row" style="gap:8px"><b>Lever la pause maintenant ?</b><button class="btn pri" data-act="unpause">Oui, lever la pause</button><button class="btn" data-act="unpauseCancel">Annuler</button></span>`
+  :`<button class="btn" data-act="unpauseAsk">Lever la pause</button>`;
+const pauseBox=()=>`<div class="warn row" style="justify-content:space-between;gap:10px"><span>Pause jeu responsable active jusqu'au ${pauseDate()} : les coupons, le Combo et les mises sont désactivés. Vous pouvez la lever à tout moment.</span>${unpauseCtl()}</div>`;
 function blockedByPause(){if(!paused())return false;toast('Pause jeu responsable active jusqu\'au '+pauseDate()+'.','var(--wa)');return true}
 function doGenerate(){
   if(blockedByPause())return;
@@ -1109,7 +1112,7 @@ V.bankroll={head:()=>`<div class="ph"><div><div class="eyebrow">Bankroll</div><h
  <div class="panel row" style="gap:14px"><span class="eyebrow">Jeu responsable</span>
   <label class="lbl" for="pauseDays">Faire une pause<select id="pauseDays" class="inp"><option value="1">24 heures</option><option value="7" selected>7 jours</option><option value="30">30 jours</option><option value="90">90 jours</option></select></label>
   <button class="btn" data-act="pause">Activer la pause</button>
-  <span class="note">${paused()?'Pause active jusqu\'au '+pauseDate()+'.':'Désactive coupons, Combo et mises. Prolongeable, jamais raccourcie.'}</span></div>`,
+  <span class="note">${paused()?'Pause active jusqu\'au '+pauseDate()+'.':'Désactive coupons, Combo et mises. Prolongeable, et vous pouvez la lever à tout moment.'}</span>${paused()?unpauseCtl():''}</div>`,
 dyn:()=>{
   const now=bankNow(),pend=bankPending(),settled=S.bets.filter(b=>b.status!=='C').slice().reverse();
   let cur=S.bank.init,peak=cur,dd=0;const curve=[cur];
@@ -1459,6 +1462,9 @@ document.addEventListener('click',e=>{
     case 'rDel':S.realCoupons=S.realCoupons.filter(c=>c.id!==arg);save();renderDyn();break;
     case 'pause':{const d=clamp(+($('#pauseDays')?.value)||7,1,90);const until=Date.now()+d*24*H;
       if(until>(S.pausedUntil||0)){S.pausedUntil=until;save();toast('Pause activée jusqu\'au '+pauseDate()+'.','var(--wa)')}else toast('Une pause plus longue est déjà active.','var(--mu)');render();break}
+    case 'unpauseAsk':S.unpauseAsk=true;render();break;
+    case 'unpauseCancel':S.unpauseAsk=false;render();break;
+    case 'unpause':S.pausedUntil=0;S.unpauseAsk=false;save();toast('Pause levée.','var(--ok)');render();break;
     case 'simReset':S.sim={attH:0,attA:0,red:0,absH:false,absA:false,rain:false};renderDrawer();break;
   }
 });
