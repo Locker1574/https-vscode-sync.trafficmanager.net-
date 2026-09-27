@@ -31,13 +31,14 @@ def generate(preds, size, **kw) -> dict:
 
 
 def regenerate(preds, current: list[dict], size, **kw) -> dict:
-    """Garde chaque sélection sauf si une nouvelle a un pourcentage plus élevé ; les verrouillées restent."""
+    """Garde chaque sélection sauf si une nouvelle a un pourcentage plus élevé et un score au moins égal ; les verrouillées restent."""
+    mode = kw.get("mode", "surete")
     fresh = candidates(preds, exclude={c["match_id"] for c in current}, **kw)
     locked = [c for c in current if c.get("locked")]
     free = sorted([c for c in current if not c.get("locked")], key=lambda c: c["p"], reverse=True)
     final, replaced = list(locked), 0
     for old in free:
-        k = next((i for i, n in enumerate(fresh) if n["p"] > old["p"]), None)
+        k = next((i for i, n in enumerate(fresh) if n["p"] > old["p"] and score(n, mode) >= score(old, mode)), None)
         if k is None:
             final.append(old)
         else:
@@ -47,7 +48,7 @@ def regenerate(preds, current: list[dict], size, **kw) -> dict:
     res = summarize(final[:size])
     res["replaced"] = replaced
     res["message"] = (f"{replaced} sélection(s) remplacée(s) par un pourcentage plus élevé." if replaced
-                      else "Coupon déjà optimal : les nouvelles sélections ont un pourcentage plus faible.")
+                      else "Coupon déjà optimal : aucune nouvelle sélection n'a un pourcentage plus élevé avec une confiance au moins égale.")
     res["alternative"] = summarize(fresh[:size])
     return res
 

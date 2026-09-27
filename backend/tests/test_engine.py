@@ -124,3 +124,22 @@ def test_track_freezes_once_and_settles():
     assert t[pred["id"]]["pick"]["status"] == "V" and t[pred["id"]]["status"]["2"] == "P"
     s = track.summary(t)
     assert s["settled"] == 1 and s["picks_won"] == 1
+
+
+def test_regenerate_does_not_trade_confidence_for_percentage():
+    reliable = {"id": "a", "home": "A", "away": "B", "date": "2026-10-01",
+                "markets": [{"key": "O1.5", "label": "", "p": 0.80, "confidence": 85, "fair_odds": 1.25}]}
+    shaky = {"id": "b", "home": "C", "away": "D", "date": "2026-10-01",
+             "markets": [{"key": "O0.5", "label": "", "p": 0.97, "confidence": 40, "fair_odds": 1.03}]}
+    cur = coupon.generate([reliable], 1)["selections"]
+    res = coupon.regenerate([reliable, shaky], cur, 1)
+    assert res["replaced"] == 0 and res["selections"][0]["match_id"] == "a"
+
+
+def test_export_endpoint(monkeypatch):
+    from fastapi.testclient import TestClient
+    from omniscore import api
+
+    monkeypatch.setattr(api, "preds", lambda days=30: _preds())
+    body = TestClient(api.app).get("/v1/export").json()
+    assert len(body["matches"]) == len(_preds()) and "track" in body and "generated" in body

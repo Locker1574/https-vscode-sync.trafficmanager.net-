@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --panel-2: #eef1f7;
+  --line: #dde3ee;
+  --fg: #0f172a;
+  --muted: #5b6477;
+  --accent: #0e9f6e;
+  --accent-fg: #ffffff;
+  --win: #0e9f6e;
+  --loss: #dc2626;
+  --warn: #b45309;
+  --info: #2563eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070b14;
+    --panel: #0e1422;
+    --panel-2: #151d2f;
+    --line: #222d44;
+    --fg: #e6ebf5;
+    --muted: #8b95ab;
+    --accent: #22d38f;
+    --accent-fg: #04120c;
+    --win: #22d38f;
+    --loss: #f87171;
+    --warn: #fbbf24;
+    --info: #60a5fa;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-win: var(--win);
+  --color-loss: var(--loss);
+  --color-warn: var(--warn);
+  --color-info: var(--info);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+@utility card {
+  @apply rounded-xl border border-line bg-panel;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-accent-fg hover:brightness-110;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-panel hover:bg-panel-2;
+}
+@utility input {
+  @apply w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm outline-none focus:border-accent;
+}
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+input[type="range"] {
+  accent-color: var(--accent);
+}

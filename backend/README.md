@@ -38,9 +38,9 @@ pip install -r requirements.txt
 python -m omniscore.cli backtest          # backtest + calibration (≈ 30 s)
 python -m omniscore.cli predict           # prédictions des 30 prochains jours → data/predictions.json
 python scripts/export_prototype.py        # injecte les vraies données dans prototype/omniscore.html
-uvicorn omniscore.api:app --reload        # API : /v1/matches, /v1/matches/{id}, /v1/value-bets, /v1/coupons/generate, /v1/coupons/regenerate, /v1/backtest
+uvicorn omniscore.api:app --reload        # API : /v1/matches, /v1/matches/{id}, /v1/value-bets, /v1/coupons/generate, /v1/coupons/regenerate, /v1/backtest, /v1/export (application web)
 python -m omniscore.tune                  # réglage des hyperparamètres
 python -m omniscore.track                 # journal réel
-python -m pytest -q                       # 21 tests
+python -m pytest -q                       # 23 tests
 ```
 Cotes réelles : définir `ODDS_API_KEY` ([The Odds API](https://the-odds-api.com), offre gratuite). Les value bets et les mises Kelly apparaissent alors automatiquement.

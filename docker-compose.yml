@@ -1,0 +1,45 @@
+# OMNISCORE : base de données + moteur de prédiction (API) + application web.
+# Lancement : SESSION_SECRET=$(openssl rand -base64 32) docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: omniscore
+      POSTGRES_PASSWORD: omniscore
+      POSTGRES_DB: omniscore
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omniscore"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      ODDS_API_KEY: ${ODDS_API_KEY:-}
+    volumes:
+      - ./backend/data:/app/data
+
+  web:
+    build: ./web
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://omniscore:omniscore@db:5432/omniscore
+      SESSION_SECRET: ${SESSION_SECRET:?Définissez SESSION_SECRET (32 caractères minimum)}
+      OMNISCORE_API_URL: http://api:8000
+      SYNC_INTERVAL_MINUTES: ${SYNC_INTERVAL_MINUTES:-10}
+      CRON_SECRET: ${CRON_SECRET:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO:-}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+
+volumes:
+  pgdata:

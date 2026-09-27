@@ -71,6 +71,14 @@ def regenerate(current: list[dict], size: int = Query(3, ge=1, le=20), pmin: flo
     return cp.regenerate(preds(), current, size, pmin=pmin, mode=mode)
 
 
+@app.get("/v1/export")
+def export():
+    """Tout ce dont l'application web a besoin pour se synchroniser : prédictions complètes et journal réel."""
+    track_path = BACKTEST_PATH.parent / "track.json"
+    track = json.loads(track_path.read_text()) if track_path.exists() else {}
+    return {"generated": date.today().isoformat(), "matches": preds(), "track": track}
+
+
 @app.get("/v1/backtest")
 def backtest():
     if not BACKTEST_PATH.exists():
