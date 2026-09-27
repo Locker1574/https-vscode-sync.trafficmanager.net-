@@ -6186,5 +6186,109 @@
 },
 "result": null,
 "status": null
+},
+"pt.1:2026-10-26:CD Santa Clara:Sport Lisboa e Benfica": {
+"league": "pt.1",
+"date": "2026-10-26",
+"home": "CD Santa Clara",
+"away": "Sport Lisboa e Benfica",
+"frozen": "2026-09-27",
+"p": {
+"1": 0.1366,
+"X": 0.2083,
+"2": 0.655,
+"O1.5": 0.7157,
+"O2.5": 0.4621,
+"U2.5": 0.5379,
+"BTTS_Y": 0.4557,
+"BTTS_N": 0.5443,
+"1X": 0.3424,
+"X2": 0.8628
+},
+"pick": {
+"key": "X2",
+"label": "Nul ou Sport Lisboa e Benfica",
+"p": 0.8628
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-27:US Sassuolo Calcio:SS Lazio": {
+"league": "it.1",
+"date": "2026-10-27",
+"home": "US Sassuolo Calcio",
+"away": "SS Lazio",
+"frozen": "2026-09-27",
+"p": {
+"1": 0.2776,
+"X": 0.2748,
+"2": 0.4476,
+"O1.5": 0.7473,
+"O2.5": 0.495,
+"U2.5": 0.505,
+"BTTS_Y": 0.5305,
+"BTTS_N": 0.4695,
+"1X": 0.5522,
+"X2": 0.7223
+},
+"pick": {
+"key": "O1.5",
+"label": "Plus de 1,5 buts",
+"p": 0.7473
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-27:AS Roma:Cagliari Calcio": {
+"league": "it.1",
+"date": "2026-10-27",
+"home": "AS Roma",
+"away": "Cagliari Calcio",
+"frozen": "2026-09-27",
+"p": {
+"1": 0.6591,
+"X": 0.2187,
+"2": 0.1222,
+"O1.5": 0.7361,
+"O2.5": 0.4801,
+"U2.5": 0.5199,
+"BTTS_Y": 0.4556,
+"BTTS_N": 0.5444,
+"1X": 0.8771,
+"X2": 0.3373
+},
+"pick": {
+"key": "1X",
+"label": "AS Roma ou nul",
+"p": 0.8771
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-27:Torino FC:Como 1907": {
+"league": "it.1",
+"date": "2026-10-27",
+"home": "Torino FC",
+"away": "Como 1907",
+"frozen": "2026-09-27",
+"p": {
+"1": 0.2024,
+"X": 0.2636,
+"2": 0.534,
+"O1.5": 0.735,
+"O2.5": 0.4784,
+"U2.5": 0.5216,
+"BTTS_Y": 0.4916,
+"BTTS_N": 0.5084,
+"1X": 0.4662,
+"X2": 0.7977
+},
+"pick": {
+"key": "X2",
+"label": "Nul ou Como 1907",
+"p": 0.7977
+},
+"result": null,
+"status": null
 }
 }
