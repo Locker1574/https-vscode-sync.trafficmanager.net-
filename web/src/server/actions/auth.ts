@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db, schema } from "@/lib/db";
-import { createSession, deleteSession } from "@/lib/auth/session";
+import { createSession, deleteSession, sessionConfigured } from "@/lib/auth/session";
 
 export interface FormState {
   error?: string;
@@ -22,7 +22,10 @@ const registerSchema = z.object({
   adult: z.literal("on", { error: "Vous devez avoir 18 ans ou plus." }),
 });
 
+const MISSING_SECRET = "Configuration manquante : SESSION_SECRET (32 caractères minimum) doit être défini sur le serveur.";
+
 export async function register(_: FormState, form: FormData): Promise<FormState> {
+  if (!sessionConfigured()) return { error: MISSING_SECRET };
   const parsed = registerSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { name, email, password } = parsed.data;
@@ -39,6 +42,7 @@ export async function register(_: FormState, form: FormData): Promise<FormState>
 const loginSchema = z.object({ email: z.string().trim().toLowerCase(), password: z.string().min(1) });
 
 export async function login(_: FormState, form: FormData): Promise<FormState> {
+  if (!sessionConfigured()) return { error: MISSING_SECRET };
   const parsed = loginSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: "Identifiants invalides." };
   const [user] = await db.select().from(schema.users).where(eq(schema.users.email, parsed.data.email));

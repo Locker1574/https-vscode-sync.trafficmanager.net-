@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { dataDir } from "@/server/paths";
 import { couponStatus, settle } from "@/lib/engine/settle";
 import type { Status } from "@/lib/engine/types";
 
@@ -54,7 +55,7 @@ export async function loadSource(): Promise<{ source: string; payload: SourcePay
     if (!res.ok) throw new Error(`API du moteur : HTTP ${res.status}`);
     return { source: api, payload: (await res.json()) as SourcePayload };
   }
-  const dir = path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.OMNISCORE_DATA_DIR ?? "../backend/data");
+  const dir = dataDir();
   const preds = JSON.parse(await readFile(path.join(dir, "predictions.json"), "utf8"));
   const track = JSON.parse(await readFile(path.join(dir, "track.json"), "utf8").catch(() => "{}"));
   return { source: dir, payload: { generated: preds.generated, matches: preds.matches, track } };

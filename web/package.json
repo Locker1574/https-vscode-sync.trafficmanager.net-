@@ -12,7 +12,9 @@
     "db:generate": "dotenv -e .env.local -c -- drizzle-kit generate",
     "db:migrate": "dotenv -e .env.local -c -- node scripts/migrate.mjs",
     "sync": "dotenv -e .env.local -c -- tsx scripts/sync.mts",
-    "db:migrate:prod": "node scripts/migrate.mjs"
+    "db:migrate:prod": "node scripts/migrate.mjs",
+    "prebuild": "node scripts/copy-data.mjs",
+    "vercel-build": "node scripts/copy-data.mjs && node scripts/migrate.mjs && tsx scripts/sync.mts && next build"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

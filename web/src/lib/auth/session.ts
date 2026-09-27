@@ -34,8 +34,10 @@ export async function deleteSession() {
   (await cookies()).delete(COOKIE);
 }
 
+export const sessionConfigured = () => (process.env.SESSION_SECRET?.length ?? 0) >= 32;
+
 export async function readSession(token: string | undefined): Promise<string | null> {
-  if (!token) return null;
+  if (!token || !sessionConfigured()) return null;
   try {
     const { payload } = await jwtVerify(token, key(), { algorithms: ["HS256"] });
     return typeof payload.sub === "string" ? payload.sub : null;

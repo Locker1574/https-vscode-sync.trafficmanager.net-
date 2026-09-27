@@ -32,13 +32,26 @@ Application Next.js qui s'appuie sur le moteur Python (`../backend`) : comptes, 
 cp .env.example .env.local      # renseigner SESSION_SECRET (openssl rand -base64 32)
 npm install
 npm run db:migrate              # PostgreSQL requis (DATABASE_URL)
-npm run sync                    # importe ../backend/data/predictions.json et track.json
+npm run prebuild && npm run sync  # copie ../backend/data dans web/data puis importe les prédictions
 npm run dev                     # http://localhost:3000
 ```
 Tout en un : `SESSION_SECRET=$(openssl rand -base64 32) docker compose up --build` à la racine du dépôt (base, API du moteur, application).
 
+## Mise en ligne sur Vercel
+Le dépôt est déjà relié à Vercel. Dans le projet Vercel :
+1. **Settings → General → Root Directory** : `web`. Laisser activée l'option qui inclut les fichiers hors de ce dossier (le build copie `../backend/data`).
+2. **Storage → Neon (Postgres)** → *Connect Project* : `DATABASE_URL` est ajouté automatiquement (`POSTGRES_URL` est aussi accepté).
+3. **Settings → Environment Variables** :
+   - `SESSION_SECRET` : 32 caractères minimum (`openssl rand -base64 32`) ;
+   - `CRON_SECRET` : chaîne aléatoire (protège `/api/cron/sync`) ;
+   - optionnel : `APP_URL` (URL publique) et les clés Stripe.
+4. **Redéployer.**
+
+À chaque déploiement, `vercel.json` lance `npm run vercel-build` : copie des données du moteur dans `web/data`, migrations, synchronisation, puis build.
+Un cron Vercel appelle `/api/cron/sync` tous les jours à 06:30 UTC. La mise à jour quotidienne du moteur (`omniscore-daily.yml`) commite de nouvelles données, ce qui redéploie l'application.
+
 ## Synchronisation
-Source : l'API du moteur (`OMNISCORE_API_URL`, route `/v1/export`) ou, à défaut, les fichiers JSON (`OMNISCORE_DATA_DIR`).
+Source : l'API du moteur (`OMNISCORE_API_URL`, route `/v1/export`) ou, à défaut, les fichiers JSON : `web/data` (copié depuis `../backend/data` par `npm run build`) ou le dossier `OMNISCORE_DATA_DIR`.
 Déclencheurs : toutes les `SYNC_INTERVAL_MINUTES` en arrière-plan (serveur Node), `GET /api/cron/sync` avec `Authorization: Bearer CRON_SECRET` (planificateur externe), ou `npm run sync`.
 
 ## Stripe

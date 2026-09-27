@@ -2,7 +2,7 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   const minutes = Number(process.env.SYNC_INTERVAL_MINUTES ?? 0);
-  if (!minutes || !process.env.DATABASE_URL) return;
+  if (!minutes || !(process.env.DATABASE_URL ?? process.env.POSTGRES_URL)) return;
   const { syncOnce } = await import("./server/sync");
   let running = false;
   const run = async () => {

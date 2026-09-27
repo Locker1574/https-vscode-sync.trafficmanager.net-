@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { and, asc, desc, eq, gte, ilike, inArray, isNotNull, lte, or, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { dataDir } from "./paths";
 import type { Market, MatchInfo, Status } from "@/lib/engine/types";
 
 export const today = () => new Date().toISOString().slice(0, 10);
@@ -158,8 +159,7 @@ export async function trackRecord() {
 /** Backtest et calibration produits par le moteur (fichiers JSON du dossier de données). */
 export async function backtest() {
   try {
-    const dir = path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.OMNISCORE_DATA_DIR ?? "../backend/data");
-    return JSON.parse(await readFile(path.join(dir, "backtest.json"), "utf8")) as BacktestFile;
+    return JSON.parse(await readFile(path.join(dataDir(), "backtest.json"), "utf8")) as BacktestFile;
   } catch {
     return null;
   }
