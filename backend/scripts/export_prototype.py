@@ -27,7 +27,12 @@ report = {
 }
 track_path = ROOT / "data" / "track_summary.json"
 track = json.loads(track_path.read_text()) if track_path.exists() else None
-blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
+# Scores finaux par match (journal réel) : servent à régler les coupons enregistrés dans la page.
+full_track_path = ROOT / "data" / "track.json"
+full_track = json.loads(full_track_path.read_text()) if full_track_path.exists() else {}
+results = {mid: t["result"] for mid, t in full_track.items() if t.get("result")}
+blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track,
+                   "results": results, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
 blob = blob.replace("</", "<\\/")
 html = HTML.read_text()
 new = re.sub(r'(<script id="realdata" type="application/json">).*?(</script>)', lambda m: m.group(1) + blob + m.group(2), html, flags=re.S)
