@@ -90,3 +90,43 @@ def test_no_keys_means_no_calls(monkeypatch):
     assert odds_api.fetch_odds("en.1") == [] and api_football.live() == [] and allsports.live() == []
     assert football_data.enrich([])[1] == 0
     assert datetime.now(timezone.utc)
+
+
+FDUK_CSV = """Div,Date,Time,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HF,AF,HC,AC,HY,AY,HR,AR
+E0,03/10/2026,15:00,Man City,Nott'm Forest,3,0,21,6,9,2,8,12,11,2,1,3,0,1
+E0,03/10/2026,17:30,Arsenal,Chelsea,2,1,14,10,6,4,10,11,7,5,2,2,0,0
+"""
+
+
+def test_match_stats_reads_football_data_co_uk_csv():
+    from omniscore.providers import match_stats
+    rows = match_stats.parse_fduk(FDUK_CSV)
+    assert rows[0]["h"] == {"corners": 11, "shots": 21, "sot": 9, "fouls": 8, "cards": 1}
+    assert rows[0]["a"]["cards"] == 4  # 3 jaunes + 1 rouge
+    assert match_stats.team_match("Man City", "Manchester City FC")
+    assert match_stats.team_match("Nott'm Forest", "Nottingham Forest FC")
+    assert not match_stats.team_match("Man City", "Manchester United FC")
+
+
+def test_match_stats_collect_pairs_rows_and_respects_quota(monkeypatch):
+    from omniscore.providers import match_stats
+    monkeypatch.setattr(match_stats, "_fetch_csv", lambda url, ttl_s: FDUK_CSV if "2627/E0" in url else None)
+    g = Match("en.1", "2026/27", date(2026, 10, 3), "15:00", None, "Manchester City FC", "Nottingham Forest FC", 3, 0)
+    calls = []
+    monkeypatch.setenv("API_FOOTBALL_KEY", "test")
+
+    def fake_get(url, params=None, headers=None, ttl_s=0, secret_params=()):
+        calls.append(url)
+        if url.endswith("/fixtures"):
+            return {"response": [{"fixture": {"id": 7, "date": "2026-10-03T14:00:00+00:00"},
+                                  "teams": {"home": {"name": "Manchester City"}, "away": {"name": "Nottingham Forest"}}}]}
+        return {"response": [{"statistics": [{"type": "Offsides", "value": 2}, {"type": "expected_goals", "value": "2.71"}]},
+                             {"statistics": [{"type": "Offsides", "value": None}, {"type": "expected_goals", "value": "0.40"}]}]}
+    monkeypatch.setattr(match_stats, "get_json", fake_get)
+    monkeypatch.setattr(match_stats, "CACHE", match_stats.Path("/nonexistent-omniscore-cache"))
+    out = match_stats.collect([g], today=date(2026, 10, 5))
+    assert out[g.id]["h"] == {"corners": 11, "shots": 21, "sot": 9, "fouls": 8, "cards": 1, "offsides": 2, "xg": 2.71}
+    assert out[g.id]["a"]["offsides"] == 0 and out[g.id]["a"]["xg"] == 0.4
+    calls.clear()
+    assert match_stats.collect([g], today=date(2026, 10, 5), max_calls=1)[g.id]["h"].get("xg") is None
+    assert len(calls) == 1  # une seule requête autorisée : la liste des matchs, pas les statistiques

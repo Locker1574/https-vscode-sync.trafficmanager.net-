@@ -46,19 +46,33 @@ import sys  # noqa: E402
 sys.path.insert(0, str(ROOT))
 from omniscore.cli import load_matches  # noqa: E402
 
+from omniscore.providers import match_stats  # noqa: E402
+
 team_ids = {f'{m["lg"]}|{t}' for m in matches for t in (m["h"], m["a"])}
-hist: dict[str, list] = {}
+games: dict[str, list] = {}
 for g in load_matches(first=2024):
     if not g.played:
         continue
-    for side, team, opp in (("H", g.home, g.away), ("A", g.away, g.home)):
-        tid = f"{g.league}|{team}"
-        if tid not in team_ids:
-            continue
+    for team in (g.home, g.away):
+        if f"{g.league}|{team}" in team_ids:
+            games.setdefault(f"{g.league}|{team}", []).append(g)
+last10 = {tid: sorted(v, key=lambda g: g.date)[-10:] for tid, v in games.items()}
+# Statistiques de match réelles (corners, tirs, cartons… ; hors-jeux et xG) des seuls matchs affichés.
+mstats = match_stats.collect({g.id: g for v in last10.values() for g in v}.values())
+# Ligne : [date, 'H'|'A', adversaire, bp, bc, bp_mt, bc_mt, {stat: [pour, contre]}]
+team_stats = {}
+for tid, v in last10.items():
+    rows = []
+    for g in v:
+        side = "H" if f"{g.league}|{g.home}" == tid else "A"
         gf, ga = (g.hg, g.ag) if side == "H" else (g.ag, g.hg)
         hgf, hga = (g.hthg, g.htag) if side == "H" else (g.htag, g.hthg)
-        hist.setdefault(tid, []).append([g.date.isoformat(), side, opp, gf, ga, hgf, hga])
-team_stats = {tid: sorted(v)[-10:] for tid, v in hist.items()}
+        st = mstats.get(g.id)
+        me, op = (st["h"], st["a"]) if st and side == "H" else ((st["a"], st["h"]) if st else ({}, {}))
+        extra = {k: [me[k], op[k]] for k in match_stats.METRICS if k in me and k in op}
+        rows.append([g.date.isoformat(), side, g.away if side == "H" else g.home, gf, ga, hgf, hga] + ([extra] if extra else []))
+    team_stats[tid] = rows
+print(f"statistiques de match : {len(mstats)} matchs (football-data.co.uk / API-Football)")
 
 blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track,
                    "results": results, "picks": picks, "standings": pred.get("standings") or {}, "live": live,

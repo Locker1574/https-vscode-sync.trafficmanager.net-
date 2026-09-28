@@ -836,37 +836,38 @@ dyn:()=>{
   <div class="tw panel" style="padding:0"><table>${head}<tbody>${ts.map((t,i)=>row(i+1,t.n,null,null,null,'',t.elo,t.id)).join('')}</tbody></table></div>`;
 }};
 
-/* ---- Stats équipes (résultats officiels, 10 derniers matchs) ---- */
-// Une ligne d'historique : [date, 'H'|'A', adversaire, buts pour, buts contre, buts pour 1re MT, buts contre 1re MT]
+/* ---- Stats équipes (données réelles, 10 derniers matchs) ---- */
+// Ligne d'historique : [date, 'H'|'A', adversaire, bp, bc, bp 1re MT, bc 1re MT, {stat: [pour, contre]}]
+// Statistiques de match : football-data.co.uk (corners, tirs, tirs cadrés, fautes, cartons), API-Football (hors-jeux, xG).
+const tsSt=k=>[r=>r[7]&&r[7][k]?r[7][k][0]:null,r=>r[7]&&r[7][k]?r[7][k][1]:null];
 const TSM=[
- {k:'gf',n:'Buts marqués',v:r=>r[3],pct:false},
- {k:'ga',n:'Buts encaissés',v:r=>r[4],pct:false},
- {k:'tot',n:'Total de buts',v:r=>r[3]+r[4],pct:false},
+ {k:'gf',n:'Buts',v:r=>r[3],a:r=>r[4]},
+ {k:'ht',n:'Buts 1re MT',v:r=>r[5]==null?null:r[5],a:r=>r[6]==null?null:r[6]},
  {k:'o25',n:'Plus de 2,5 buts',v:r=>r[3]+r[4]>2.5?1:0,pct:true,mk:'O2.5'},
  {k:'btts',n:'Les deux marquent',v:r=>r[3]>0&&r[4]>0?1:0,pct:true,mk:'BTTS_Y'},
- {k:'cs',n:'Clean sheets',v:r=>r[4]===0?1:0,pct:true},
- {k:'fts',n:'Sans marquer',v:r=>r[3]===0?1:0,pct:true},
- {k:'pts',n:'Points (forme)',v:r=>r[3]>r[4]?3:r[3]===r[4]?1:0,pct:false},
- {k:'ht',n:'Buts en 1re MT',v:r=>r[5]==null?null:r[5]+r[6],pct:false}];
+ ...[['corners','Corners'],['shots','Tirs'],['sot','Tirs cadrés'],['cards','Cartons'],['fouls','Fautes']].map(([k,n])=>{const[v,a]=tsSt(k);return{k,n,v,a,src:'football-data.co.uk'}}),
+ ...[['offsides','Hors-jeux'],['xg','xG']].map(([k,n])=>{const[v,a]=tsSt(k);return{k,n,v,a,src:'API-Football',x2:k==='xg'}})];
 Object.assign(S,{tsM:'gf',tsLeague:'all',tsTeam:null,tsCmp:null});
 const tsHist=id=>((REAL&&REAL.team_stats)||{})[id]||[];
 const avgOf=a=>{const x=a.filter(v=>v!=null);return x.length?x.reduce((s,v)=>s+v,0)/x.length:null};
-const tsFmt=(M,v)=>v==null?'–':M.pct?pc(v):dec(v,2);
+const tsFmt=(M,v)=>v==null?'–':M.pct?pc(v):dec(v,M.x2?2:1);
 function tsRow(id,M){
-  const h=tsHist(id),vals=h.map(M.v);
-  const home=avgOf(h.filter(r=>r[1]==='H').map(M.v)),away=avgOf(h.filter(r=>r[1]==='A').map(M.v));
+  const h=tsHist(id),vals=h.map(M.v),known=vals.filter(v=>v!=null);
+  const avgA=M.a?avgOf(h.map(M.a)):null;
   const a5=avgOf(vals.slice(-5)),b5=avgOf(vals.slice(-10,-5));
   const prev=vals.slice(0,-1).filter(v=>v!=null),mu=avgOf(prev),sd=prev.length>2?Math.sqrt(prev.reduce((s,v)=>s+(v-mu)**2,0)/prev.length)||Math.sqrt(mu||0)||1:1;
-  const last=vals[vals.length-1],z=!M.pct&&last!=null&&mu!=null?(last-mu)/sd:0;
-  return{id,t:TEAMS[id],n:h.length,avg:avgOf(vals),home,away,vals,trend:a5!=null&&b5!=null?a5-b5:0,z,last};
+  const last=vals[vals.length-1],z=!M.pct&&!M.x2&&last!=null&&mu!=null&&prev.length>=4?(last-mu)/sd:0;
+  return{id,t:TEAMS[id],n:known.length,avg:avgOf(vals),avgA,max:known.length?Math.max(...known):null,vals,trend:a5!=null&&b5!=null?a5-b5:0,z,last,mu};
 }
 function formChips(h){return h.slice(-10).map(r=>{const c=r[3]>r[4]?'s-V':r[3]===r[4]?'s-A':'s-P';return`<span class="pill ${c}" title="${esc(r[0]+' '+(r[1]==='H'?'vs ':'à ')+r[2]+' '+r[3]+'-'+r[4])}">${r[3]>r[4]?'V':r[3]===r[4]?'N':'D'}</span>`}).join('')}
 function radarReal(A,B,rows){
-  const ks=['gf','o25','btts','cs','pts','ht'],N=ks.length,cx=150,cy=130,r=95;
-  const val=(id,k)=>avgOf(tsHist(id).map(TSM.find(M=>M.k===k).v))||0;
-  const mx=Object.fromEntries(ks.map(k=>[k,Math.max(...rows.map(x=>val(x.id,k)),.01)]));
+  const val=(id,k)=>avgOf(tsHist(id).map(TSM.find(M=>M.k===k).v));
+  const ks=['corners','shots','sot','cards','fouls','xg','gf','ht','o25','btts'].filter(k=>val(A,k)!=null&&val(B,k)!=null).slice(0,6);
+  if(ks.length<3)return'<p class="note">Pas assez de statistiques communes.</p>';
+  const N=ks.length,cx=150,cy=130,r=95;
+  const mx=Object.fromEntries(ks.map(k=>[k,Math.max(...rows.map(x=>val(x.id,k)||0),.01)]));
   const pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/N;return[cx+Math.cos(a)*r*f,cy+Math.sin(a)*r*f]};
-  const poly=id=>ks.map((k,i)=>pt(i,val(id,k)/mx[k]).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const poly=id=>ks.map((k,i)=>pt(i,Math.min(1,val(id,k)/mx[k])).map(v=>v.toFixed(1)).join(',')).join(' ');
   return`<svg viewBox="0 0 300 265" width="100%" style="max-width:340px" role="img" aria-label="Comparaison">
   ${[.25,.5,.75,1].map(f=>`<polygon points="${ks.map((_,i)=>pt(i,f).join(',')).join(' ')}" fill="none" stroke="var(--ln)"/>`).join('')}
   ${ks.map((k,i)=>{const[x,y]=pt(i,1);const[lx,ly]=pt(i,1.2);return`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--ln)"/><text x="${lx}" y="${ly}" font-size="10" text-anchor="middle" dominant-baseline="middle" fill="var(--mu)">${TSM.find(M=>M.k===k).n}</text>`}).join('')}
@@ -874,34 +875,41 @@ function radarReal(A,B,rows){
   <polygon points="${poly(B)}" fill="var(--ac2)" fill-opacity=".18" stroke="var(--ac2)" stroke-width="2"/></svg>
   <div class="legend"><span style="color:var(--ac)">■ ${esc(TN(A))}</span><span style="color:var(--ac2)">■ ${esc(TN(B))}</span></div>`;
 }
-V.teamstats={head:()=>{const M=TSM.find(x=>x.k===S.tsM);return`<div class="ph"><div><div class="eyebrow">Stats équipes · résultats officiels</div><h2>${M.n} : 10 derniers matchs, domicile et extérieur</h2><p>Calculé sur les vrais scores de chaque équipe. Cliquez une équipe pour sa fiche et son prochain match.</p></div></div>
+V.teamstats={head:()=>{const M=TSM.find(x=>x.k===S.tsM);return`<div class="ph"><div><div class="eyebrow">Stats équipes · données réelles</div><h2>${M.n} : moyennes, tendances et prochain match</h2><p>10 derniers matchs réels de chaque équipe${M.src?' · source '+M.src:' · résultats officiels'}. Cliquez une équipe pour sa fiche.</p></div></div>
  <div class="tabs">${TSM.map(x=>`<button class="${S.tsM===x.k?'on':''}" data-act="tsM:${x.k}">${x.n}</button>`).join('')}</div>
- <div class="chips"><button class="chip${S.tsLeague==='all'?' on':''}" data-act="tsLeague:all">Toutes</button>${LEAGUES.map(l=>`<button class="chip${S.tsLeague===l.id?' on':''}" data-act="tsLeague:${l.id}">${l.n}</button>`).join('')}</div>`},
+ <label class="lbl" for="tsLeague">Compétition<select id="tsLeague" class="inp" data-in="tsLeague" style="max-width:240px"><option value="all">Toutes</option>${LEAGUES.map(l=>`<option value="${l.id}"${S.tsLeague===l.id?' selected':''}>${l.n}</option>`).join('')}</select></label>`},
 dyn:()=>{
-  const M=TSM.find(x=>x.k===S.tsM);
-  const rows=Object.keys((REAL&&REAL.team_stats)||{}).filter(id=>TEAMS[id]&&(S.tsLeague==='all'||TEAMS[id].lg===S.tsLeague)).map(id=>tsRow(id,M)).filter(x=>x.avg!=null)
-    .sort((a,b)=>M.k==='ga'||M.k==='fts'?a.avg-b.avg:b.avg-a.avg);
-  if(!rows.length)return'<div class="list"><div class="empty">Aucune statistique disponible.</div></div>';
-  const sel=S.tsTeam&&rows.some(r=>r.id===S.tsTeam)?S.tsTeam:rows[0].id,T=TEAMS[sel],H=tsHist(sel);
+  const M=TSM.find(x=>x.k===S.tsM),fmt=v=>tsFmt(M,v);
+  const ids=Object.keys((REAL&&REAL.team_stats)||{}).filter(id=>TEAMS[id]&&(S.tsLeague==='all'||TEAMS[id].lg===S.tsLeague));
+  const rows=ids.map(id=>tsRow(id,M)).filter(x=>x.avg!=null).sort((a,b)=>b.avg-a.avg);
+  const lgs=[...new Set(ids.map(id=>TEAMS[id].lg))],missing=M.src?lgs.filter(l=>!rows.some(r=>r.t.lg===l)):[];
+  const miss=missing.length?`<p class="note">Non disponible pour ${missing.map(LGN).join(', ')} : source ${M.src} non chargée${M.src==='API-Football'?' (clé API-Football et accès réseau à v3.football.api-sports.io ; 100 requêtes par jour, l\'historique se complète en quelques jours)':' (accès réseau à www.football-data.co.uk)'}.</p>`:'';
+  if(!rows.length)return`<div class="list"><div class="empty">${M.n} : non disponible pour l'instant.</div></div>${miss}`;
+  const sel=S.tsTeam&&rows.some(r=>r.id===S.tsTeam)?S.tsTeam:rows[0].id,T=TEAMS[sel],X=rows.find(r=>r.id===sel);
   const nx=DATA.matches.filter(m=>m.status==='NS'&&m.ko>Date.now()&&(m.h===sel||m.a===sel)).sort((a,b)=>a.ko-b.ko)[0];
-  const mkp=k=>nx&&nx.sels.find(s=>s.rk===k);
-  const cmpId=S.tsCmp&&TEAMS[S.tsCmp]&&S.tsCmp!==sel?S.tsCmp:(rows.find(r=>r.id!==sel&&TEAMS[r.id].lg===T.lg)||rows.find(r=>r.id!==sel)||{}).id;
-  const unusual=rows.filter(r=>r.z>2.5).sort((a,b)=>b.z-a.z).slice(0,8);
-  return`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start">
-   <div class="tw panel" style="padding:0"><table><thead><tr><th>#</th><th>Équipe</th><th class="r">Moy.</th><th class="r">Dom.</th><th class="r">Ext.</th><th>10 derniers</th><th class="r">Tendance</th></tr></thead><tbody>
-   ${rows.map((x,i)=>`<tr class="click" data-act="tsTeam:${x.id}"${x.id===sel?' style="background:var(--sf2)"':''}><td class="num mu">${i+1}</td><td>${esc(x.t.n)}${S.tsLeague==='all'?`<div class="mu" style="font-size:11px">${LGN(x.t.lg)}</div>`:''}</td><td class="r num">${tsFmt(M,x.avg)}</td><td class="r num">${tsFmt(M,x.home)}</td><td class="r num">${tsFmt(M,x.away)}</td><td>${bars(x.vals.map(v=>v??0),90,26,x.z>2.5)}</td><td class="r num" style="color:${Math.abs(x.trend)<.05?'var(--mu)':(x.trend>0)!==(M.k==='ga'||M.k==='fts')?'var(--ok)':'var(--ba)'}">${Math.abs(x.trend)<.05?'•':x.trend>0?'▲':'▼'} ${M.pct?Math.round(Math.abs(x.trend)*100)+' pts':dec(Math.abs(x.trend),1)}</td></tr>`).join('')}</tbody></table></div>
+  let pred='<p class="note">Pas de match à venir connu.</p>';
+  if(nx){const oid=nx.h===sel?nx.a:nx.h,opp=TEAMS[oid]||{n:TN(oid)},O=TEAMS[oid]?tsRow(oid,M):null;
+    const when=`<div class="eyebrow" style="margin-top:12px">Prochain match · ${dayLbl(nx.ko)} ${hm(nx.ko)}</div><p style="margin:4px 0" data-act="open:${nx.id}" class="click">contre <b>${esc(opp.n)}</b> (${nx.h===sel?'domicile':'extérieur'})</p>`;
+    const bar=(lab,p)=>`<div class="prow"><span>${esc(lab)}</span><span class="bar ${confCls(p)}"><i style="width:${p*100}%"></i></span><span class="num">${pc(p)}</span><span></span></div>`;
+    if(M.pct){const s=nx.sels.find(s=>s.rk===M.mk);pred=when+(s?bar(s.label+' (modèle)',s.p):'')+`<p class="note">Fréquence récente : ${esc(T.n)} ${pc(X.avg)}${O&&O.avg!=null?', '+esc(opp.n)+' '+pc(O.avg):''}.</p>`}
+    else{const lam=O&&O.avgA!=null&&X.avg!=null?(X.avg+O.avgA)/2:X.avg;
+      if(M.x2)pred=when+`<p>xG attendu (historique) <b class="num">${dec(lam,2)}</b>${nx.lh?` · modèle <b class="num">${dec(nx.h===sel?nx.lh:nx.la,2)}</b>`:''}.</p>`;
+      else{const line=Math.max(.5,Math.floor(lam)-.5);pred=when+`<p>Moyenne attendue <b class="num">${dec(lam)}</b> (${esc(T.n)} pour + ${esc(opp.n)} contre).</p>${bar(T.n+' plus de '+dec(line)+' '+M.n.toLowerCase(),pOver(lam,line))}${bar(T.n+' plus de '+dec(line+1),pOver(lam,line+1))}`}}}
+  const cmpId=S.tsCmp&&S.tsCmp!==sel&&rows.some(r=>r.id===S.tsCmp)?S.tsCmp:(rows.find(r=>r.id!==sel&&r.t.lg===T.lg)||rows.find(r=>r.id!==sel)||{}).id;
+  const alerts=[];ids.forEach(id=>TSM.forEach(N=>{if(N.pct||N.x2)return;const r=tsRow(id,N);if(r.z>2.5)alerts.push({t:r.t,M:N,v:r.last,mu:r.mu,z:r.z,sev:r.z<3.5?1:r.z<5?2:r.z<7?3:4})}));
+  alerts.sort((a,b)=>b.z-a.z);
+  return`<div class="grid2" style="align-items:start">
+   <div class="tw panel" style="padding:0"><table><thead><tr><th>#</th><th>Équipe</th><th class="r">Pour</th><th class="r">Contre</th><th>10 derniers</th><th class="r">Tendance</th></tr></thead><tbody>
+   ${rows.map((x,i)=>`<tr class="click" data-act="tsTeam:${x.id}"${x.id===sel?' style="background:var(--sf2)"':''}><td class="num mu">${i+1}</td><td>${esc(x.t.n)}${x.z>2.5?' <span class="risk lv2" title="Valeur inhabituelle au dernier match">⚑</span>':''}${S.tsLeague==='all'?`<div class="mu" style="font-size:11px">${LGN(x.t.lg)}</div>`:''}</td><td class="r num">${fmt(x.avg)}</td><td class="r num">${M.pct?'–':fmt(x.avgA)}</td><td>${bars(x.vals.map(v=>v??0),120,28,x.z>2.5)}</td><td class="r num" style="color:${Math.abs(x.trend)<.05?'var(--mu)':x.trend>0?'var(--ok)':'var(--ba)'}">${Math.abs(x.trend)<.05?'•':x.trend>0?'▲':'▼'} ${M.pct?Math.round(Math.abs(x.trend)*100)+' pts':fmt(Math.abs(x.trend))}</td></tr>`).join('')}</tbody></table></div>
    <div style="display:flex;flex-direction:column;gap:16px">
     <div class="panel"><div class="row" style="justify-content:space-between"><div><div class="eyebrow">${LGN(T.lg)}${T.pos?' · '+T.pos+'e':''}${T.elo?' · Elo '+T.elo:''}</div><h3>${esc(T.n)}</h3></div><button class="star${S.favTeams.has(sel)?' on':''}" data-act="favT:${sel}" aria-label="Équipe favorite">${S.favTeams.has(sel)?'★':'☆'}</button></div>
-     <div class="row" style="gap:4px;margin-top:8px">${formChips(H)}</div>
-     <div class="sgrid" style="margin-top:10px">${TSM.slice(0,8).map(x=>`<div><span>${x.n}</span><b class="num">${tsFmt(x,avgOf(H.map(x.v)))}</b></div>`).join('')}</div>
-     <div class="tl" style="margin-top:10px">${H.slice().reverse().map(r=>`<div><span class="num mu">${r[0].slice(5)}</span><i class="dot" style="--c:${r[3]>r[4]?'var(--ok)':r[3]===r[4]?'var(--mu)':'var(--ba)'}"></i><span>${r[1]==='H'?'vs':'à'} ${esc(r[2])}</span><span class="num">${r[3]}-${r[4]}${r[5]!=null?' <span class="mu">(MT '+r[5]+'-'+r[6]+')</span>':''}</span></div>`).join('')}</div>
-     ${nx?`<div class="eyebrow" style="margin-top:12px">Prochain match · ${dayLbl(nx.ko)} ${hm(nx.ko)}</div><p style="margin:4px 0" data-act="open:${nx.id}" class="click"><b>${esc(TN(nx.h))} – ${esc(TN(nx.a))}</b></p>
-      ${['1','X','2','O2.5','BTTS_Y','O1.5'].map(k=>mkp(k)).filter(Boolean).map(s=>`<div class="prow"><span>${esc(s.label)}</span><span class="bar ${confCls(s.p)}"><i style="width:${s.p*100}%"></i></span><span class="num">${pc(s.p)}</span><span></span></div>`).join('')}`:'<p class="note">Pas de match à venir connu.</p>'}
-    </div>
+     <div class="row" style="gap:4px;margin-top:8px">${formChips(tsHist(sel))}</div>
+     <div class="sgrid" style="margin-top:8px">${M.pct?`<div><span>Fréquence</span><b class="num">${fmt(X.avg)}</b></div><div><span>Matchs</span><b class="num">${X.n}</b></div>`:`<div><span>Moy. pour</span><b class="num">${fmt(X.avg)}</b></div><div><span>Moy. contre</span><b class="num">${fmt(X.avgA)}</b></div><div><span>Max</span><b class="num">${X.max==null?'–':dec(X.max,M.x2?2:0)}</b></div>`}</div>
+     <div style="margin-top:10px">${bars(X.vals.map(v=>v??0),300,60)}</div>${pred}</div>
     ${cmpId?`<div class="panel"><div class="row" style="justify-content:space-between"><h3>Comparateur</h3><label class="lbl" for="tsCmp">Comparer avec<select id="tsCmp" class="inp" data-in="tsCmp">${rows.filter(r=>r.id!==sel).map(r=>`<option value="${r.id}"${r.id===cmpId?' selected':''}>${esc(r.t.n)}</option>`).join('')}</select></label></div>
-     <div style="display:flex;justify-content:center">${radarReal(sel,cmpId,rows)}</div><p class="note">Moyennes sur les 10 derniers matchs, ramenées au meilleur total de la sélection.</p></div>`:''}
-    <div class="panel"><h3>Valeurs inhabituelles</h3><p class="note">Dernier match nettement au-dessus de la moyenne de l'équipe (z &gt; 2,5).</p><div class="tl">${unusual.map(x=>`<div><span class="num mu">z ${dec(x.z)}</span><i class="dot" style="--c:var(--or)"></i><span>${esc(x.t.n)} : ${x.last} (moy. ${dec(avgOf(x.vals.slice(0,-1)),1)})</span><span></span></div>`).join('')||'<div><span></span><span></span><span class="mu">Aucune pour cette statistique.</span><span></span></div>'}</div></div>
-    <p class="note">Corners, tirs et cartons : non disponibles, ils demandent les statistiques match par match d'API-Football (pas encore chargées).</p>
+     <div style="display:flex;flex-direction:column;align-items:center">${radarReal(sel,cmpId,rows)}</div><p class="note">Moyennes sur les 10 derniers matchs, ramenées au meilleur total de la sélection.</p></div>`:''}
+    <div class="panel"><h3>Valeurs inhabituelles</h3><p class="note">Dernier match nettement au-dessus de la moyenne de l'équipe (z &gt; 2,5), toutes statistiques. À croiser avec le menu Intégrité.</p><div class="tl">${alerts.slice(0,10).map(a=>`<div class="${SEVC[a.sev]}"><span class="num mu">z ${dec(a.z)}</span><i class="dot"></i><span>${esc(a.t.n)} : ${a.v} ${a.M.n.toLowerCase()} (moy. ${dec(a.mu)})</span><span class="risk">${SEVN[a.sev]}</span></div>`).join('')||'<div><span></span><span></span><span class="mu">Aucune anomalie.</span><span></span></div>'}</div></div>
+    ${miss}
    </div></div>`;
 }};
 
@@ -1131,7 +1139,7 @@ const AI_TOOLS=[
    return{selections:it.map(x=>{const m=MB(x.mid);return{match:TN(m.h)+' – '+TN(m.a),coup_envoi:hm(m.ko),option:x.label,proba:Math.round(x.p*100),cote:x.odds}}),proba_combinee:Math.round(it.reduce((a,x)=>a*x.p,1)*100),cote_totale:+it.reduce((a,x)=>a*x.odds,1).toFixed(2)}}},
  {name:'alertes_integrite',description:'Matchs avec signaux de marché inhabituels (niveau, score, signaux, derniers mouvements).',
   execute:()=>DATA.matches.filter(m=>m.status!=='FT'&&lvl(m.risk)>=1).sort((a,b)=>b.risk-a.risk).slice(0,10).map(m=>({...matchBrief(m),signaux:m.signals,mouvements:m.ilog.slice(-3).map(e=>e.txt+' '+(e.pct>0?'+':'')+e.pct.toFixed(1)+' % ('+SEVN[e.sev]+')')}))},
- {name:'stats_equipe',description:'Classement réel, cote Elo, statistiques des 10 derniers matchs (buts, plus de 2,5, les deux marquent, clean sheets, points) et prochain match d\'une équipe.',
+ {name:'stats_equipe',description:'Classement réel, cote Elo, statistiques des 10 derniers matchs (buts, plus de 2,5, les deux marquent, corners, tirs, cartons, fautes, hors-jeux, xG quand disponibles) et prochain match d\'une équipe.',
   inputSchema:{type:'object',properties:{equipe:{type:'string'}},required:['equipe']},
   execute:i=>{const q=String(i.equipe||'').toLowerCase();const t=Object.values(TEAMS).find(t=>t.n.toLowerCase().includes(q));if(!t)throw new Error('Équipe introuvable');
    const nx=DATA.matches.filter(m=>m.status==='NS'&&m.ko>Date.now()&&(m.h===t.id||m.a===t.id)).sort((a,b)=>a.ko-b.ko)[0];
