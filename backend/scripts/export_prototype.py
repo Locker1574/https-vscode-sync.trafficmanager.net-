@@ -16,7 +16,9 @@ bt = json.loads((ROOT / "data" / "backtest.json").read_text())
 matches = [{
     "id": m["id"], "lg": m["league"], "d": m["date"], "t": m["time"], "h": m["home"], "a": m["away"],
     "xg": [m["xg"]["home"], m["xg"]["away"]], "elo": [m["elo"]["home"], m["elo"]["away"]], "ag": m["model_agreement"], "dc": m["data_completeness"],
-    "mk": [[x["key"], x["label"], round(x["p"], 4), x["confidence"]] + ([x["odds"], round(x["value"], 4)] if "odds" in x else []) for x in m["markets"] if x["key"] in KEEP or x["key"].startswith("CS")],
+    "mk": [[x["key"], x["label"], round(x["p"], 4), x["confidence"]] + ([x["odds"], round(x["value"], 4), x.get("bookmaker")] if "odds" in x else [])
+           for x in m["markets"] if x["key"] in KEEP or x["key"].startswith("CS")],
+    **({"stake": m["stake"]} if m.get("stake") else {}), **({"abs": m["absences"]} if m.get("absences") else {}),
 } for m in pred["matches"]]
 t = bt["test_calibrated"]
 report = {
@@ -30,9 +32,18 @@ track = json.loads(track_path.read_text()) if track_path.exists() else None
 # Scores finaux par match (journal réel) : servent à régler les coupons enregistrés dans la page.
 full_track_path = ROOT / "data" / "track.json"
 full_track = json.loads(full_track_path.read_text()) if full_track_path.exists() else {}
-results = {mid: t["result"] for mid, t in full_track.items() if t.get("result")}
+results = {mid: t["result"] + (t.get("ht") or []) for mid, t in full_track.items() if t.get("result")}
+# Journal réel complet : la sélection figée de chaque match (onglet Journal).
+picks = {mid: {"lg": t["league"], "d": t["date"], "h": t["home"], "a": t["away"], "fz": t["frozen"], **t["pick"]}
+         for mid, t in full_track.items() if t.get("pick")}
+live_path = ROOT / "data" / "live.json"
+live = json.loads(live_path.read_text()) if live_path.exists() else None
+hist_path = ROOT / "data" / "odds_history.json"
+odds_hist = json.loads(hist_path.read_text()) if hist_path.exists() else {}
+odds_hist = {mid: h for mid, h in odds_hist.items() if any(m["id"] == mid for m in matches)}
 blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track,
-                   "results": results, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
+                   "results": results, "picks": picks, "standings": pred.get("standings") or {}, "live": live,
+                   "odds_history": odds_hist, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
 blob = blob.replace("</", "<\\/")
 html = HTML.read_text()
 new = re.sub(r'(<script id="realdata" type="application/json">).*?(</script>)', lambda m: m.group(1) + blob + m.group(2), html, flags=re.S)

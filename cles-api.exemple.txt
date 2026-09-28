@@ -1,0 +1,6 @@
+# Copiez ce fichier en « cles-api.txt » (même dossier) et collez vos clés après le signe =.
+# cles-api.txt n'est jamais envoyé sur GitHub.
+ODDS_API_KEY=
+FOOTBALL_DATA_KEY=
+API_FOOTBALL_KEY=
+ALLSPORTS_KEY=

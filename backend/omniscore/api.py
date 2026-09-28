@@ -10,8 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import coupon as cp
 from .backtest import OUT as BACKTEST_PATH
-from .data.openfootball import LEAGUES, load
+from .cli import attach_injuries, fetch_live, load_matches
+from .data.openfootball import LEAGUES
 from .engine import upcoming_predictions
+from .providers import football_data
 from .providers.odds_api import attach_odds
 
 app = FastAPI(title="OMNISCORE API", version="0.1.0",
@@ -23,8 +25,10 @@ _cache: dict = {"t": 0.0, "preds": []}
 
 def preds(days: int = 30) -> list[dict]:
     if time.time() - _cache["t"] > 900 or _cache.get("days") != days:
-        p = upcoming_predictions(load(first=2021), date.today(), days)
+        p = upcoming_predictions(load_matches(), date.today(), days)
         attach_odds(p)
+        football_data.attach_context(p)
+        attach_injuries(p)
         _cache.update(t=time.time(), preds=p, days=days)
     return _cache["preds"]
 
@@ -76,7 +80,7 @@ def export():
     """Tout ce dont l'application web a besoin pour se synchroniser : prédictions complètes et journal réel."""
     track_path = BACKTEST_PATH.parent / "track.json"
     track = json.loads(track_path.read_text()) if track_path.exists() else {}
-    return {"generated": date.today().isoformat(), "matches": preds(), "track": track}
+    return {"generated": date.today().isoformat(), "matches": preds(), "track": track, "live": fetch_live()}
 
 
 @app.get("/v1/backtest")

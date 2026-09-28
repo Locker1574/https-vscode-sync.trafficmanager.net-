@@ -46,6 +46,13 @@ if "%SESSION_SECRET%"=="" (
   exit /b 1
 )
 
+rem Clés d'API facultatives (données réelles : cotes, classements, direct).
+if exist "cles-api.txt" (
+  for /f "usebackq eol=# tokens=1,* delims==" %%a in ("cles-api.txt") do if not "%%b"=="" set "%%a=%%b"
+  echo Clés d'API chargées depuis cles-api.txt.
+) else (
+  echo Astuce : copiez cles-api.exemple.txt en cles-api.txt et ajoutez vos clés pour les cotes et le direct.
+)
 echo [3/4] Démarrage d'OMNISCORE (la première fois : 5 à 10 minutes)...
 docker compose up --build -d
 if errorlevel 1 (

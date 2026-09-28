@@ -6290,5 +6290,135 @@
 },
 "result": null,
 "status": null
+},
+"it.1:2026-10-28:AC Milan:Bologna FC 1909": {
+"league": "it.1",
+"date": "2026-10-28",
+"home": "AC Milan",
+"away": "Bologna FC 1909",
+"frozen": "2026-09-28",
+"p": {
+"1": 0.4933,
+"X": 0.2696,
+"2": 0.2371,
+"O1.5": 0.7268,
+"O2.5": 0.4677,
+"U2.5": 0.5323,
+"BTTS_Y": 0.5061,
+"BTTS_N": 0.4939,
+"1X": 0.7633,
+"X2": 0.5075
+},
+"pick": {
+"key": "1X",
+"label": "AC Milan ou nul",
+"p": 0.7633
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-28:Parma Calcio 1913:Udinese Calcio": {
+"league": "it.1",
+"date": "2026-10-28",
+"home": "Parma Calcio 1913",
+"away": "Udinese Calcio",
+"frozen": "2026-09-28",
+"p": {
+"1": 0.3168,
+"X": 0.3067,
+"2": 0.3765,
+"O1.5": 0.6315,
+"O2.5": 0.3575,
+"U2.5": 0.6425,
+"BTTS_Y": 0.446,
+"BTTS_N": 0.554,
+"1X": 0.6205,
+"X2": 0.6808
+},
+"pick": {
+"key": "U3.5",
+"label": "Moins de 3,5 buts",
+"p": 0.8231
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-28:Venezia FC:FC Internazionale Milano": {
+"league": "it.1",
+"date": "2026-10-28",
+"home": "Venezia FC",
+"away": "FC Internazionale Milano",
+"frozen": "2026-09-28",
+"p": {
+"1": 0.0561,
+"X": 0.107,
+"2": 0.8369,
+"O1.5": 0.8758,
+"O2.5": 0.6956,
+"U2.5": 0.3044,
+"BTTS_Y": 0.4856,
+"BTTS_N": 0.5144,
+"1X": 0.1796,
+"X2": 0.945
+},
+"pick": {
+"key": "X2",
+"label": "Nul ou FC Internazionale Milano",
+"p": 0.945
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-28:AC Monza:SSC Napoli": {
+"league": "it.1",
+"date": "2026-10-28",
+"home": "AC Monza",
+"away": "SSC Napoli",
+"frozen": "2026-09-28",
+"p": {
+"1": 0.119,
+"X": 0.1956,
+"2": 0.6854,
+"O1.5": 0.7778,
+"O2.5": 0.541,
+"U2.5": 0.459,
+"BTTS_Y": 0.4876,
+"BTTS_N": 0.5124,
+"1X": 0.3162,
+"X2": 0.8813
+},
+"pick": {
+"key": "X2",
+"label": "Nul ou SSC Napoli",
+"p": 0.8813
+},
+"result": null,
+"status": null
+},
+"it.1:2026-10-28:Genoa CFC:Juventus FC": {
+"league": "it.1",
+"date": "2026-10-28",
+"home": "Genoa CFC",
+"away": "Juventus FC",
+"frozen": "2026-09-28",
+"p": {
+"1": 0.1671,
+"X": 0.2643,
+"2": 0.5686,
+"O1.5": 0.6647,
+"O2.5": 0.3987,
+"U2.5": 0.6013,
+"BTTS_Y": 0.4369,
+"BTTS_N": 0.5631,
+"1X": 0.4325,
+"X2": 0.8332
+},
+"pick": {
+"key": "X2",
+"label": "Nul ou Juventus FC",
+"p": 0.8332
+},
+"result": null,
+"status": null
 }
 }

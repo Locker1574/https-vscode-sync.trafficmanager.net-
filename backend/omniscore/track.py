@@ -12,7 +12,6 @@ from pathlib import Path
 import numpy as np
 
 from .calibration import rps
-from .data.openfootball import load
 from .markets import settle
 
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -50,6 +49,8 @@ def settle_all(track: dict, matches) -> int:
         if not m or t["result"]:
             continue
         t["result"] = [m.hg, m.ag]
+        if m.hthg is not None:
+            t["ht"] = [m.hthg, m.htag]
         t["status"] = {k: settle(k, m.hg, m.ag) for k in t["p"]}
         if t["pick"]:
             t["pick"]["status"] = settle(t["pick"]["key"], m.hg, m.ag, m.hthg, m.htag)
@@ -78,7 +79,8 @@ def main():
     preds = json.loads((DATA / "predictions.json").read_text())["matches"]
     today = date.today()
     a = freeze(preds, track, today)
-    b = settle_all(track, load(first=today.year - 1))
+    from .cli import load_matches
+    b = settle_all(track, load_matches(first=today.year - 1))
     TRACK.write_text(json.dumps(track, ensure_ascii=False, indent=0))
     s = summary(track)
     (DATA / "track_summary.json").write_text(json.dumps(s, ensure_ascii=False, indent=1))

@@ -1,2 +1,4 @@
 # Secret de session créé par LANCER-OMNISCORE.bat
 .omniscore-secret
+# Clés d API personnelles (lues par LANCER-OMNISCORE.bat)
+cles-api.txt

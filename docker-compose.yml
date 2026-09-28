@@ -19,6 +19,9 @@ services:
     build: ./backend
     environment:
       ODDS_API_KEY: ${ODDS_API_KEY:-}
+      FOOTBALL_DATA_KEY: ${FOOTBALL_DATA_KEY:-}
+      API_FOOTBALL_KEY: ${API_FOOTBALL_KEY:-}
+      ALLSPORTS_KEY: ${ALLSPORTS_KEY:-}
     volumes:
       - ./backend/data:/app/data
 

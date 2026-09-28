@@ -35,6 +35,9 @@ jobs:
       - name: Prédictions, journal réel, export vers le prototype
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          FOOTBALL_DATA_KEY: ${{ secrets.FOOTBALL_DATA_KEY }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          ALLSPORTS_KEY: ${{ secrets.ALLSPORTS_KEY }}
         run: |
           python -m omniscore.cli predict
           python -m omniscore.track
