@@ -41,9 +41,28 @@ live = json.loads(live_path.read_text()) if live_path.exists() else None
 hist_path = ROOT / "data" / "odds_history.json"
 odds_hist = json.loads(hist_path.read_text()) if hist_path.exists() else {}
 odds_hist = {mid: h for mid, h in odds_hist.items() if any(m["id"] == mid for m in matches)}
+# Statistiques réelles par équipe : les 10 derniers matchs joués (résultats officiels).
+import sys  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from omniscore.cli import load_matches  # noqa: E402
+
+team_ids = {f'{m["lg"]}|{t}' for m in matches for t in (m["h"], m["a"])}
+hist: dict[str, list] = {}
+for g in load_matches(first=2024):
+    if not g.played:
+        continue
+    for side, team, opp in (("H", g.home, g.away), ("A", g.away, g.home)):
+        tid = f"{g.league}|{team}"
+        if tid not in team_ids:
+            continue
+        gf, ga = (g.hg, g.ag) if side == "H" else (g.ag, g.hg)
+        hgf, hga = (g.hthg, g.htag) if side == "H" else (g.htag, g.hthg)
+        hist.setdefault(tid, []).append([g.date.isoformat(), side, opp, gf, ga, hgf, hga])
+team_stats = {tid: sorted(v)[-10:] for tid, v in hist.items()}
+
 blob = json.dumps({"generated": pred["generated"], "with_odds": pred["with_odds"], "matches": matches, "report": report, "track": track,
                    "results": results, "picks": picks, "standings": pred.get("standings") or {}, "live": live,
-                   "odds_history": odds_hist, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
+                   "odds_history": odds_hist, "team_stats": team_stats, "w_dc": 0.65}, ensure_ascii=False, separators=(",", ":"))
 blob = blob.replace("</", "<\\/")
 html = HTML.read_text()
 new = re.sub(r'(<script id="realdata" type="application/json">).*?(</script>)', lambda m: m.group(1) + blob + m.group(2), html, flags=re.S)
