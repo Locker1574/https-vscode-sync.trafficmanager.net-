@@ -37,6 +37,11 @@ npm run dev                     # http://localhost:3000
 ```
 Tout en un : `SESSION_SECRET=$(openssl rand -base64 32) docker compose up --build` à la racine du dépôt (base, API du moteur, application).
 
+**Windows, en un double-clic** (Docker Desktop installé et démarré) :
+- `LANCER-OMNISCORE.bat` : vérifie Docker, crée le secret de session, démarre tout et ouvre http://localhost:3000 ;
+- `ARRETER-OMNISCORE.bat` : arrête OMNISCORE (comptes et données conservés) ;
+- `OUVRIR-DEMO.bat` : ouvre l'application en un seul fichier, sans Docker.
+
 ## Mise en ligne sur Vercel
 Le dépôt est déjà relié à Vercel. Dans le projet Vercel :
 1. **Settings → General → Root Directory** : `web`. Laisser activée l'option qui inclut les fichiers hors de ce dossier (le build copie `../backend/data`).

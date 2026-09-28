@@ -1,5 +1,6 @@
 # OMNISCORE : base de données + moteur de prédiction (API) + application web.
 # Lancement : SESSION_SECRET=$(openssl rand -base64 32) docker compose up --build
+# Windows : double-cliquez sur LANCER-OMNISCORE.bat
 services:
   db:
     image: postgres:16-alpine
@@ -30,6 +31,9 @@ services:
         condition: service_started
     ports:
       - "3000:3000"
+    volumes:
+      # Backtest et journal réel du moteur, lus par la page Performance.
+      - ./backend/data:/app/data:ro
     environment:
       DATABASE_URL: postgres://omniscore:omniscore@db:5432/omniscore
       SESSION_SECRET: ${SESSION_SECRET:?Définissez SESSION_SECRET (32 caractères minimum)}
