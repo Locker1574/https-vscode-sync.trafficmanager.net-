@@ -13,10 +13,12 @@ from .backtest import OUT as BACKTEST_PATH
 from .data.openfootball import LEAGUES, load
 from .engine import upcoming_predictions
 from .providers.odds_api import attach_odds
+from .virtual.api import router as virtual_router
 
 app = FastAPI(title="OMNISCORE API", version="0.1.0",
               description="Prédictions football calibrées (Dixon-Coles + Elo). Aucune prédiction n'est garantie.")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
+app.include_router(virtual_router)
 
 _cache: dict = {"t": 0.0, "preds": []}
 

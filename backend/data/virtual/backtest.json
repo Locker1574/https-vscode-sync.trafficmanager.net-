@@ -1,0 +1,3540 @@
+{
+ "fc26-rush-superligue": {
+  "name": "FC 26. 5x5 Rush. Superligue",
+  "kind": "football",
+  "brut": {
+   "predictions": 50880,
+   "events": 600,
+   "brier": 0.1428,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 33081,
+     "annonce": 0.17924159600494677,
+     "observe": 0.18052658625797285
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 6889,
+     "annonce": 0.5688931595321257,
+     "observe": 0.5608941791261431
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5551,
+     "annonce": 0.7169695513067199,
+     "observe": 0.7083408394883804
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2417,
+     "annonce": 0.8509047269117895,
+     "observe": 0.8580885395117914
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1467,
+     "annonce": 0.9229091695034697,
+     "observe": 0.9318336741649625
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 1475,
+     "annonce": 0.9741244819454178,
+     "observe": 0.9783050847457627
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 33081,
+     "annonce": 0.179,
+     "observe": 0.181
+    },
+    "Forte": {
+     "n": 5551,
+     "annonce": 0.717,
+     "observe": 0.708
+    },
+    "Très forte": {
+     "n": 5359,
+     "annonce": 0.905,
+     "observe": 0.911
+    },
+    "Moyenne": {
+     "n": 6889,
+     "annonce": 0.569,
+     "observe": 0.561
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.929,
+    "observe": 0.937,
+    "marches": {
+     "OU": {
+      "n": 335,
+      "observe": 0.928
+     },
+     "DC": {
+      "n": 103,
+      "observe": 0.932
+     },
+     "HT": {
+      "n": 84,
+      "observe": 0.952
+     },
+     "BTTS": {
+      "n": 57,
+      "observe": 0.965
+     },
+     "1X2": {
+      "n": 11,
+      "observe": 0.909
+     },
+     "MARGIN": {
+      "n": 7,
+      "observe": 1.0
+     },
+     "DNB": {
+      "n": 3,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 50880,
+   "events": 600,
+   "brier": 0.1429,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 33081,
+     "annonce": 0.17991585145663017,
+     "observe": 0.18046612859345243
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 7070,
+     "annonce": 0.5687938048934588,
+     "observe": 0.5650636492220651
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5553,
+     "annonce": 0.716302247617689,
+     "observe": 0.7145687016027372
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2342,
+     "annonce": 0.8496923949345775,
+     "observe": 0.8582408198121264
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1468,
+     "annonce": 0.9241042150867796,
+     "observe": 0.9366485013623979
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 1366,
+     "annonce": 0.9705956667602026,
+     "observe": 0.9765739385065886
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 33081,
+     "annonce": 0.18,
+     "observe": 0.18
+    },
+    "Forte": {
+     "n": 5553,
+     "annonce": 0.716,
+     "observe": 0.715
+    },
+    "Très forte": {
+     "n": 5176,
+     "annonce": 0.903,
+     "observe": 0.912
+    },
+    "Moyenne": {
+     "n": 7070,
+     "annonce": 0.569,
+     "observe": 0.565
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.93,
+    "observe": 0.94,
+    "marches": {
+     "OU": {
+      "n": 311,
+      "observe": 0.932
+     },
+     "HT": {
+      "n": 127,
+      "observe": 0.945
+     },
+     "DC": {
+      "n": 89,
+      "observe": 0.933
+     },
+     "BTTS": {
+      "n": 51,
+      "observe": 0.961
+     },
+     "1X2": {
+      "n": 18,
+      "observe": 1.0
+     },
+     "DNB": {
+      "n": 4,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc24-4x4-angleterre": {
+  "name": "FC 24. 4x4. Championnat d'Angleterre",
+  "kind": "football",
+  "brut": {
+   "predictions": 49628,
+   "events": 600,
+   "brier": 0.1492,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32882,
+     "annonce": 0.18884725884942885,
+     "observe": 0.18697159540173955
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 6272,
+     "annonce": 0.5684274572653661,
+     "observe": 0.5741390306122449
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5640,
+     "annonce": 0.7238504438355783,
+     "observe": 0.7280141843971631
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3053,
+     "annonce": 0.8488952919113182,
+     "observe": 0.8496560759908287
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1198,
+     "annonce": 0.9262263256580432,
+     "observe": 0.9357262103505843
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 583,
+     "annonce": 0.9684704539428369,
+     "observe": 0.9622641509433962
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32882,
+     "annonce": 0.189,
+     "observe": 0.187
+    },
+    "Moyenne": {
+     "n": 6272,
+     "annonce": 0.568,
+     "observe": 0.574
+    },
+    "Très forte": {
+     "n": 4834,
+     "annonce": 0.882,
+     "observe": 0.885
+    },
+    "Forte": {
+     "n": 5640,
+     "annonce": 0.724,
+     "observe": 0.728
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.935,
+    "observe": 0.94,
+    "marches": {
+     "OU": {
+      "n": 273,
+      "observe": 0.938
+     },
+     "HT": {
+      "n": 222,
+      "observe": 0.946
+     },
+     "BTTS": {
+      "n": 66,
+      "observe": 0.924
+     },
+     "DC": {
+      "n": 32,
+      "observe": 0.969
+     },
+     "1X2": {
+      "n": 7,
+      "observe": 0.857
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 49628,
+   "events": 600,
+   "brier": 0.1492,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32885,
+     "annonce": 0.18937903320247948,
+     "observe": 0.18713699254979474
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 6395,
+     "annonce": 0.5683975826140107,
+     "observe": 0.5770132916340891
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5501,
+     "annonce": 0.7230413279633974,
+     "observe": 0.7276858752954009
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3089,
+     "annonce": 0.8479457627782088,
+     "observe": 0.8491421171900292
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1204,
+     "annonce": 0.9275420263953527,
+     "observe": 0.9368770764119602
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 554,
+     "annonce": 0.9643099653316319,
+     "observe": 0.9620938628158845
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32885,
+     "annonce": 0.189,
+     "observe": 0.187
+    },
+    "Moyenne": {
+     "n": 6395,
+     "annonce": 0.568,
+     "observe": 0.577
+    },
+    "Très forte": {
+     "n": 4847,
+     "annonce": 0.881,
+     "observe": 0.884
+    },
+    "Forte": {
+     "n": 5501,
+     "annonce": 0.723,
+     "observe": 0.728
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.936,
+    "observe": 0.945,
+    "marches": {
+     "HT": {
+      "n": 264,
+      "observe": 0.955
+     },
+     "OU": {
+      "n": 246,
+      "observe": 0.939
+     },
+     "BTTS": {
+      "n": 60,
+      "observe": 0.917
+     },
+     "DC": {
+      "n": 26,
+      "observe": 1.0
+     },
+     "1X2": {
+      "n": 4,
+      "observe": 0.75
+     }
+    }
+   }
+  }
+ },
+ "fc25-3x3-conference": {
+  "name": "FC 25. 3x3. Ligue de conférence",
+  "kind": "football",
+  "brut": {
+   "predictions": 49628,
+   "events": 600,
+   "brier": 0.1463,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32862,
+     "annonce": 0.1863899382702224,
+     "observe": 0.18443795265047774
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5895,
+     "annonce": 0.5679547321183479,
+     "observe": 0.5684478371501273
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5498,
+     "annonce": 0.7263384307677535,
+     "observe": 0.7371771553292106
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3443,
+     "annonce": 0.8437284644317874,
+     "observe": 0.8402555910543131
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1224,
+     "annonce": 0.9238140031189727,
+     "observe": 0.934640522875817
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 706,
+     "annonce": 0.9733311087303437,
+     "observe": 0.9858356940509915
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32862,
+     "annonce": 0.186,
+     "observe": 0.184
+    },
+    "Forte": {
+     "n": 5498,
+     "annonce": 0.726,
+     "observe": 0.737
+    },
+    "Très forte": {
+     "n": 5373,
+     "annonce": 0.879,
+     "observe": 0.881
+    },
+    "Moyenne": {
+     "n": 5895,
+     "annonce": 0.568,
+     "observe": 0.568
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.931,
+    "observe": 0.945,
+    "marches": {
+     "OU": {
+      "n": 450,
+      "observe": 0.944
+     },
+     "HT": {
+      "n": 83,
+      "observe": 0.952
+     },
+     "DC": {
+      "n": 45,
+      "observe": 0.933
+     },
+     "1X2": {
+      "n": 10,
+      "observe": 1.0
+     },
+     "BTTS": {
+      "n": 8,
+      "observe": 0.875
+     },
+     "DNB": {
+      "n": 3,
+      "observe": 1.0
+     },
+     "MARGIN": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 49628,
+   "events": 600,
+   "brier": 0.1465,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32869,
+     "annonce": 0.1869433241680633,
+     "observe": 0.18430740211141197
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 6047,
+     "annonce": 0.5686062167445709,
+     "observe": 0.5744997519431123
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5424,
+     "annonce": 0.7254403247587087,
+     "observe": 0.739122418879056
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3446,
+     "annonce": 0.8438680328038852,
+     "observe": 0.8418456181079512
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1223,
+     "annonce": 0.9257312373811862,
+     "observe": 0.937857726901063
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 619,
+     "annonce": 0.9708281643103998,
+     "observe": 0.9838449111470113
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32869,
+     "annonce": 0.187,
+     "observe": 0.184
+    },
+    "Forte": {
+     "n": 5424,
+     "annonce": 0.725,
+     "observe": 0.739
+    },
+    "Très forte": {
+     "n": 5288,
+     "annonce": 0.878,
+     "observe": 0.881
+    },
+    "Moyenne": {
+     "n": 6047,
+     "annonce": 0.569,
+     "observe": 0.574
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.932,
+    "observe": 0.945,
+    "marches": {
+     "OU": {
+      "n": 406,
+      "observe": 0.938
+     },
+     "HT": {
+      "n": 128,
+      "observe": 0.969
+     },
+     "DC": {
+      "n": 38,
+      "observe": 0.921
+     },
+     "1X2": {
+      "n": 16,
+      "observe": 1.0
+     },
+     "BTTS": {
+      "n": 11,
+      "observe": 0.909
+     },
+     "DNB": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc26-england": {
+  "name": "FC 26. England Championship",
+  "kind": "football",
+  "brut": {
+   "predictions": 48322,
+   "events": 600,
+   "brier": 0.1575,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32839,
+     "annonce": 0.2037076427651313,
+     "observe": 0.20542647461859376
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5360,
+     "annonce": 0.5675448972287269,
+     "observe": 0.5759328358208955
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5191,
+     "annonce": 0.7265393968136781,
+     "observe": 0.7168175688691967
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3130,
+     "annonce": 0.8472150183423468,
+     "observe": 0.839297124600639
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1103,
+     "annonce": 0.9244936596154367,
+     "observe": 0.9011786038077969
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 699,
+     "annonce": 0.9693524646214886,
+     "observe": 0.9585121602288984
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32839,
+     "annonce": 0.204,
+     "observe": 0.205
+    },
+    "Moyenne": {
+     "n": 5360,
+     "annonce": 0.568,
+     "observe": 0.576
+    },
+    "Forte": {
+     "n": 5191,
+     "annonce": 0.727,
+     "observe": 0.717
+    },
+    "Très forte": {
+     "n": 4932,
+     "annonce": 0.882,
+     "observe": 0.87
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.92,
+    "observe": 0.893,
+    "marches": {
+     "OU": {
+      "n": 428,
+      "observe": 0.893
+     },
+     "TEAM": {
+      "n": 131,
+      "observe": 0.924
+     },
+     "HT": {
+      "n": 34,
+      "observe": 0.824
+     },
+     "AH": {
+      "n": 7,
+      "observe": 0.714
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48322,
+   "events": 600,
+   "brier": 0.1575,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32829,
+     "annonce": 0.20404662751301603,
+     "observe": 0.205519510189162
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5453,
+     "annonce": 0.5679550227613541,
+     "observe": 0.5727122684760683
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5119,
+     "annonce": 0.7264922359374903,
+     "observe": 0.7212346161359641
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3115,
+     "annonce": 0.8465718953677775,
+     "observe": 0.8394863563402889
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1128,
+     "annonce": 0.9254714021076176,
+     "observe": 0.9024822695035462
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 678,
+     "annonce": 0.96628847649891,
+     "observe": 0.9587020648967551
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32829,
+     "annonce": 0.204,
+     "observe": 0.206
+    },
+    "Moyenne": {
+     "n": 5453,
+     "annonce": 0.568,
+     "observe": 0.573
+    },
+    "Forte": {
+     "n": 5119,
+     "annonce": 0.726,
+     "observe": 0.721
+    },
+    "Très forte": {
+     "n": 4921,
+     "annonce": 0.881,
+     "observe": 0.87
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.921,
+    "observe": 0.893,
+    "marches": {
+     "OU": {
+      "n": 386,
+      "observe": 0.889
+     },
+     "TEAM": {
+      "n": 140,
+      "observe": 0.936
+     },
+     "HT": {
+      "n": 67,
+      "observe": 0.851
+     },
+     "AH": {
+      "n": 7,
+      "observe": 0.714
+     }
+    }
+   }
+  }
+ },
+ "fc26-champions-league": {
+  "name": "FC 26. Champions League",
+  "kind": "football",
+  "brut": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.16,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 33055,
+     "annonce": 0.20930769393787793,
+     "observe": 0.21016487672061715
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5640,
+     "annonce": 0.568235049817881,
+     "observe": 0.5654255319148936
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5239,
+     "annonce": 0.7268582092295114,
+     "observe": 0.7333460584080932
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3051,
+     "annonce": 0.8452312045758579,
+     "observe": 0.8377581120943953
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 845,
+     "annonce": 0.9254733635169372,
+     "observe": 0.9076923076923077
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 490,
+     "annonce": 0.96970874792137,
+     "observe": 0.9530612244897959
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 33055,
+     "annonce": 0.209,
+     "observe": 0.21
+    },
+    "Moyenne": {
+     "n": 5640,
+     "annonce": 0.568,
+     "observe": 0.565
+    },
+    "Forte": {
+     "n": 5239,
+     "annonce": 0.727,
+     "observe": 0.733
+    },
+    "Très forte": {
+     "n": 4386,
+     "annonce": 0.875,
+     "observe": 0.864
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.916,
+    "observe": 0.903,
+    "marches": {
+     "OU": {
+      "n": 541,
+      "observe": 0.9
+     },
+     "TEAM": {
+      "n": 40,
+      "observe": 0.95
+     },
+     "HT": {
+      "n": 16,
+      "observe": 0.875
+     },
+     "AH": {
+      "n": 3,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.16,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 33041,
+     "annonce": 0.2095949500935562,
+     "observe": 0.20992100723343723
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5707,
+     "annonce": 0.5685082507506228,
+     "observe": 0.56702295426669
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5210,
+     "annonce": 0.7267811010673035,
+     "observe": 0.7343570057581574
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3019,
+     "annonce": 0.8447291220172976,
+     "observe": 0.8376946008612123
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 844,
+     "annonce": 0.9262347807115644,
+     "observe": 0.9063981042654028
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 499,
+     "annonce": 0.9678089723153308,
+     "observe": 0.9539078156312625
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 33041,
+     "annonce": 0.21,
+     "observe": 0.21
+    },
+    "Moyenne": {
+     "n": 5707,
+     "annonce": 0.569,
+     "observe": 0.567
+    },
+    "Forte": {
+     "n": 5210,
+     "annonce": 0.727,
+     "observe": 0.734
+    },
+    "Très forte": {
+     "n": 4362,
+     "annonce": 0.875,
+     "observe": 0.864
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.916,
+    "observe": 0.898,
+    "marches": {
+     "OU": {
+      "n": 512,
+      "observe": 0.898
+     },
+     "TEAM": {
+      "n": 57,
+      "observe": 0.947
+     },
+     "HT": {
+      "n": 27,
+      "observe": 0.815
+     },
+     "AH": {
+      "n": 4,
+      "observe": 0.75
+     }
+    }
+   }
+  }
+ },
+ "fc26-world-cup": {
+  "name": "FC 26. Championnat du monde",
+  "kind": "football",
+  "brut": {
+   "predictions": 48324,
+   "events": 600,
+   "brier": 0.1589,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32859,
+     "annonce": 0.20498146666317607,
+     "observe": 0.2076447852947442
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5462,
+     "annonce": 0.5663991675931989,
+     "observe": 0.5611497619919443
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5398,
+     "annonce": 0.7289039770427556,
+     "observe": 0.7213782882549092
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3204,
+     "annonce": 0.8450889416012595,
+     "observe": 0.8401997503121099
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 925,
+     "annonce": 0.9245747816050035,
+     "observe": 0.92
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 476,
+     "annonce": 0.9666057010122497,
+     "observe": 0.9558823529411765
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32859,
+     "annonce": 0.205,
+     "observe": 0.208
+    },
+    "Forte": {
+     "n": 5398,
+     "annonce": 0.729,
+     "observe": 0.721
+    },
+    "Moyenne": {
+     "n": 5462,
+     "annonce": 0.566,
+     "observe": 0.561
+    },
+    "Très forte": {
+     "n": 4605,
+     "annonce": 0.874,
+     "observe": 0.868
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.919,
+    "observe": 0.922,
+    "marches": {
+     "OU": {
+      "n": 475,
+      "observe": 0.918
+     },
+     "TEAM": {
+      "n": 119,
+      "observe": 0.941
+     },
+     "DC": {
+      "n": 4,
+      "observe": 1.0
+     },
+     "HT": {
+      "n": 2,
+      "observe": 0.5
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48324,
+   "events": 600,
+   "brier": 0.1589,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32850,
+     "annonce": 0.2052568832444781,
+     "observe": 0.2075799086757991
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5552,
+     "annonce": 0.5669285303211734,
+     "observe": 0.5630403458213257
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5329,
+     "annonce": 0.7289715323126182,
+     "observe": 0.722086695440045
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3194,
+     "annonce": 0.8445827088121355,
+     "observe": 0.8387601753287414
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 933,
+     "annonce": 0.9259855366666107,
+     "observe": 0.9239013933547695
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 466,
+     "annonce": 0.9647159643791393,
+     "observe": 0.9570815450643777
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32850,
+     "annonce": 0.205,
+     "observe": 0.208
+    },
+    "Forte": {
+     "n": 5329,
+     "annonce": 0.729,
+     "observe": 0.722
+    },
+    "Moyenne": {
+     "n": 5552,
+     "annonce": 0.567,
+     "observe": 0.563
+    },
+    "Très forte": {
+     "n": 4593,
+     "annonce": 0.873,
+     "observe": 0.868
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.92,
+    "observe": 0.92,
+    "marches": {
+     "OU": {
+      "n": 444,
+      "observe": 0.923
+     },
+     "TEAM": {
+      "n": 130,
+      "observe": 0.923
+     },
+     "HT": {
+      "n": 16,
+      "observe": 0.812
+     },
+     "AH": {
+      "n": 9,
+      "observe": 0.889
+     },
+     "DC": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc25-italy": {
+  "name": "FC 25. Italy Championship",
+  "kind": "football",
+  "brut": {
+   "predictions": 48282,
+   "events": 600,
+   "brier": 0.1549,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32880,
+     "annonce": 0.2041171910528065,
+     "observe": 0.20398418491484185
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5255,
+     "annonce": 0.5668614832302773,
+     "observe": 0.5706945765937202
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4896,
+     "annonce": 0.72323510816396,
+     "observe": 0.7246732026143791
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2798,
+     "annonce": 0.8500991688382568,
+     "observe": 0.8409578270192996
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1494,
+     "annonce": 0.9249479300676939,
+     "observe": 0.9129852744310576
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 959,
+     "annonce": 0.9697188153281573,
+     "observe": 0.9614181438998958
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32880,
+     "annonce": 0.204,
+     "observe": 0.204
+    },
+    "Forte": {
+     "n": 4896,
+     "annonce": 0.723,
+     "observe": 0.725
+    },
+    "Moyenne": {
+     "n": 5255,
+     "annonce": 0.567,
+     "observe": 0.571
+    },
+    "Très forte": {
+     "n": 5251,
+     "annonce": 0.893,
+     "observe": 0.883
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.932,
+    "observe": 0.913,
+    "marches": {
+     "OU": {
+      "n": 353,
+      "observe": 0.907
+     },
+     "TEAM": {
+      "n": 166,
+      "observe": 0.928
+     },
+     "HT": {
+      "n": 55,
+      "observe": 0.927
+     },
+     "AH": {
+      "n": 21,
+      "observe": 0.857
+     },
+     "DC": {
+      "n": 5,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48282,
+   "events": 600,
+   "brier": 0.1549,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32863,
+     "annonce": 0.20449336213020575,
+     "observe": 0.20405927638986093
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5357,
+     "annonce": 0.5674483895305908,
+     "observe": 0.571775247339929
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4820,
+     "annonce": 0.7231638394682947,
+     "observe": 0.7261410788381742
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2804,
+     "annonce": 0.8498446544934168,
+     "observe": 0.8380884450784594
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1550,
+     "annonce": 0.9263932272033142,
+     "observe": 0.9180645161290323
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 888,
+     "annonce": 0.967431764420655,
+     "observe": 0.9583333333333334
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32863,
+     "annonce": 0.204,
+     "observe": 0.204
+    },
+    "Forte": {
+     "n": 4820,
+     "annonce": 0.723,
+     "observe": 0.726
+    },
+    "Moyenne": {
+     "n": 5357,
+     "annonce": 0.567,
+     "observe": 0.572
+    },
+    "Très forte": {
+     "n": 5242,
+     "annonce": 0.892,
+     "observe": 0.882
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.934,
+    "observe": 0.92,
+    "marches": {
+     "OU": {
+      "n": 337,
+      "observe": 0.908
+     },
+     "TEAM": {
+      "n": 178,
+      "observe": 0.933
+     },
+     "HT": {
+      "n": 83,
+      "observe": 0.94
+     },
+     "AH": {
+      "n": 1,
+      "observe": 1.0
+     },
+     "DC": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc25-europa": {
+  "name": "FC 25. Ligue européenne",
+  "kind": "football",
+  "brut": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.1584,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32972,
+     "annonce": 0.2068805474418171,
+     "observe": 0.2083889360669659
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5279,
+     "annonce": 0.5666176640519252,
+     "observe": 0.5633642735366546
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5444,
+     "annonce": 0.7247612920569027,
+     "observe": 0.717670830271859
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2954,
+     "annonce": 0.8501120256231981,
+     "observe": 0.8408937034529451
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1186,
+     "annonce": 0.9232614731915425,
+     "observe": 0.9224283305227656
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 485,
+     "annonce": 0.9648948287890098,
+     "observe": 0.9670103092783505
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32972,
+     "annonce": 0.207,
+     "observe": 0.208
+    },
+    "Moyenne": {
+     "n": 5279,
+     "annonce": 0.567,
+     "observe": 0.563
+    },
+    "Forte": {
+     "n": 5444,
+     "annonce": 0.725,
+     "observe": 0.718
+    },
+    "Très forte": {
+     "n": 4625,
+     "annonce": 0.881,
+     "observe": 0.875
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.922,
+    "observe": 0.927,
+    "marches": {
+     "OU": {
+      "n": 456,
+      "observe": 0.934
+     },
+     "TEAM": {
+      "n": 125,
+      "observe": 0.904
+     },
+     "HT": {
+      "n": 19,
+      "observe": 0.895
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.1584,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32960,
+     "annonce": 0.20709597810046548,
+     "observe": 0.2083131067961165
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5389,
+     "annonce": 0.5674999691412794,
+     "observe": 0.5615141955835962
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5335,
+     "annonce": 0.7247604097348274,
+     "observe": 0.721087160262418
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2961,
+     "annonce": 0.8491524727573667,
+     "observe": 0.8429584599797366
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1208,
+     "annonce": 0.924627188921716,
+     "observe": 0.9205298013245033
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 467,
+     "annonce": 0.9638384750136948,
+     "observe": 0.9678800856531049
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32960,
+     "annonce": 0.207,
+     "observe": 0.208
+    },
+    "Moyenne": {
+     "n": 5389,
+     "annonce": 0.567,
+     "observe": 0.562
+    },
+    "Forte": {
+     "n": 5335,
+     "annonce": 0.725,
+     "observe": 0.721
+    },
+    "Très forte": {
+     "n": 4636,
+     "annonce": 0.88,
+     "observe": 0.876
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.923,
+    "observe": 0.928,
+    "marches": {
+     "OU": {
+      "n": 405,
+      "observe": 0.943
+     },
+     "TEAM": {
+      "n": 146,
+      "observe": 0.918
+     },
+     "HT": {
+      "n": 48,
+      "observe": 0.833
+     },
+     "AH": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc26-germany": {
+  "name": "FC 26. Germany Championship",
+  "kind": "football",
+  "brut": {
+   "predictions": 48290,
+   "events": 600,
+   "brier": 0.1569,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32982,
+     "annonce": 0.20664413039095633,
+     "observe": 0.20699169243829968
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5377,
+     "annonce": 0.5693298871266109,
+     "observe": 0.568904593639576
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5220,
+     "annonce": 0.7245815361803158,
+     "observe": 0.7243295019157088
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2958,
+     "annonce": 0.8485984362692651,
+     "observe": 0.8431372549019608
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1128,
+     "annonce": 0.9248771916781507,
+     "observe": 0.9281914893617021
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 625,
+     "annonce": 0.9676378987569284,
+     "observe": 0.9712
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32982,
+     "annonce": 0.207,
+     "observe": 0.207
+    },
+    "Forte": {
+     "n": 5220,
+     "annonce": 0.725,
+     "observe": 0.724
+    },
+    "Moyenne": {
+     "n": 5377,
+     "annonce": 0.569,
+     "observe": 0.569
+    },
+    "Très forte": {
+     "n": 4711,
+     "annonce": 0.883,
+     "observe": 0.88
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.924,
+    "observe": 0.927,
+    "marches": {
+     "OU": {
+      "n": 436,
+      "observe": 0.915
+     },
+     "TEAM": {
+      "n": 108,
+      "observe": 0.935
+     },
+     "HT": {
+      "n": 38,
+      "observe": 1.0
+     },
+     "AH": {
+      "n": 18,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48290,
+   "events": 600,
+   "brier": 0.1569,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32963,
+     "annonce": 0.20696965599229247,
+     "observe": 0.20692898097867304
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5507,
+     "annonce": 0.5702109799309408,
+     "observe": 0.57000181587071
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5127,
+     "annonce": 0.7250451752152102,
+     "observe": 0.7257655549054027
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2928,
+     "annonce": 0.8478602652355163,
+     "observe": 0.844603825136612
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1183,
+     "annonce": 0.9261105215348503,
+     "observe": 0.9247675401521556
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 582,
+     "annonce": 0.9663160117111947,
+     "observe": 0.9742268041237113
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32963,
+     "annonce": 0.207,
+     "observe": 0.207
+    },
+    "Forte": {
+     "n": 5127,
+     "annonce": 0.725,
+     "observe": 0.726
+    },
+    "Moyenne": {
+     "n": 5507,
+     "annonce": 0.57,
+     "observe": 0.57
+    },
+    "Très forte": {
+     "n": 4693,
+     "annonce": 0.882,
+     "observe": 0.881
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.926,
+    "observe": 0.928,
+    "marches": {
+     "OU": {
+      "n": 404,
+      "observe": 0.918
+     },
+     "TEAM": {
+      "n": 122,
+      "observe": 0.943
+     },
+     "HT": {
+      "n": 69,
+      "observe": 0.957
+     },
+     "AH": {
+      "n": 5,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc26-italy": {
+  "name": "FC 26. Italy Championship",
+  "kind": "football",
+  "brut": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.1552,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32755,
+     "annonce": 0.20150808894609917,
+     "observe": 0.20693023965806748
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5394,
+     "annonce": 0.5654733195320866,
+     "observe": 0.5472747497219133
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4850,
+     "annonce": 0.7265662332158057,
+     "observe": 0.711958762886598
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2920,
+     "annonce": 0.8484772787897337,
+     "observe": 0.8452054794520548
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1356,
+     "annonce": 0.9255179836660523,
+     "observe": 0.9277286135693216
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 1045,
+     "annonce": 0.970802236217786,
+     "observe": 0.9665071770334929
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32755,
+     "annonce": 0.202,
+     "observe": 0.207
+    },
+    "Moyenne": {
+     "n": 5394,
+     "annonce": 0.565,
+     "observe": 0.547
+    },
+    "Forte": {
+     "n": 4850,
+     "annonce": 0.727,
+     "observe": 0.712
+    },
+    "Très forte": {
+     "n": 5321,
+     "annonce": 0.892,
+     "observe": 0.89
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.93,
+    "observe": 0.935,
+    "marches": {
+     "OU": {
+      "n": 313,
+      "observe": 0.927
+     },
+     "TEAM": {
+      "n": 176,
+      "observe": 0.932
+     },
+     "HT": {
+      "n": 55,
+      "observe": 0.964
+     },
+     "AH": {
+      "n": 51,
+      "observe": 0.961
+     },
+     "DC": {
+      "n": 5,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48320,
+   "events": 600,
+   "brier": 0.1552,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32727,
+     "annonce": 0.2018620082109414,
+     "observe": 0.2068933907782565
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5499,
+     "annonce": 0.5656281864149124,
+     "observe": 0.547372249499909
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4788,
+     "annonce": 0.7264413655550549,
+     "observe": 0.7132414369256475
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2904,
+     "annonce": 0.8479503392823535,
+     "observe": 0.8471074380165289
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1434,
+     "annonce": 0.9261558519570935,
+     "observe": 0.9246861924686193
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 968,
+     "annonce": 0.9676252264172481,
+     "observe": 0.9679752066115702
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32727,
+     "annonce": 0.202,
+     "observe": 0.207
+    },
+    "Moyenne": {
+     "n": 5499,
+     "annonce": 0.566,
+     "observe": 0.547
+    },
+    "Forte": {
+     "n": 4788,
+     "annonce": 0.726,
+     "observe": 0.713
+    },
+    "Très forte": {
+     "n": 5306,
+     "annonce": 0.891,
+     "observe": 0.89
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.932,
+    "observe": 0.933,
+    "marches": {
+     "OU": {
+      "n": 275,
+      "observe": 0.924
+     },
+     "TEAM": {
+      "n": 194,
+      "observe": 0.933
+     },
+     "HT": {
+      "n": 106,
+      "observe": 0.953
+     },
+     "AH": {
+      "n": 22,
+      "observe": 0.955
+     },
+     "DC": {
+      "n": 3,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc26-spain": {
+  "name": "FC 26. Spain Championship",
+  "kind": "football",
+  "brut": {
+   "predictions": 48318,
+   "events": 600,
+   "brier": 0.1586,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32822,
+     "annonce": 0.2039848502026311,
+     "observe": 0.20702577539455244
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5420,
+     "annonce": 0.5665574010796598,
+     "observe": 0.5677121771217712
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5250,
+     "annonce": 0.7261424639147872,
+     "observe": 0.7135238095238096
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3056,
+     "annonce": 0.8472022580265948,
+     "observe": 0.8285340314136126
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1128,
+     "annonce": 0.9247956756330306,
+     "observe": 0.9148936170212766
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 642,
+     "annonce": 0.9693661504853399,
+     "observe": 0.9626168224299065
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32822,
+     "annonce": 0.204,
+     "observe": 0.207
+    },
+    "Moyenne": {
+     "n": 5420,
+     "annonce": 0.567,
+     "observe": 0.568
+    },
+    "Forte": {
+     "n": 5250,
+     "annonce": 0.726,
+     "observe": 0.714
+    },
+    "Très forte": {
+     "n": 4826,
+     "annonce": 0.882,
+     "observe": 0.867
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.923,
+    "observe": 0.915,
+    "marches": {
+     "OU": {
+      "n": 408,
+      "observe": 0.919
+     },
+     "TEAM": {
+      "n": 121,
+      "observe": 0.909
+     },
+     "HT": {
+      "n": 53,
+      "observe": 0.868
+     },
+     "DC": {
+      "n": 11,
+      "observe": 1.0
+     },
+     "AH": {
+      "n": 6,
+      "observe": 1.0
+     },
+     "DNB": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48318,
+   "events": 600,
+   "brier": 0.1586,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32802,
+     "annonce": 0.204213971772355,
+     "observe": 0.20681665752088288
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5513,
+     "annonce": 0.5668847966686126,
+     "observe": 0.5699256303283149
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 5180,
+     "annonce": 0.7258576931256454,
+     "observe": 0.7142857142857143
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 3056,
+     "annonce": 0.8466053205697586,
+     "observe": 0.8278795811518325
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1141,
+     "annonce": 0.9259011606688763,
+     "observe": 0.9132340052585451
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 626,
+     "annonce": 0.9670413931818065,
+     "observe": 0.9616613418530351
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32802,
+     "annonce": 0.204,
+     "observe": 0.207
+    },
+    "Moyenne": {
+     "n": 5513,
+     "annonce": 0.567,
+     "observe": 0.57
+    },
+    "Forte": {
+     "n": 5180,
+     "annonce": 0.726,
+     "observe": 0.714
+    },
+    "Très forte": {
+     "n": 4823,
+     "annonce": 0.881,
+     "observe": 0.865
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.923,
+    "observe": 0.912,
+    "marches": {
+     "OU": {
+      "n": 376,
+      "observe": 0.918
+     },
+     "TEAM": {
+      "n": 141,
+      "observe": 0.908
+     },
+     "HT": {
+      "n": 68,
+      "observe": 0.868
+     },
+     "DC": {
+      "n": 10,
+      "observe": 1.0
+     },
+     "AH": {
+      "n": 4,
+      "observe": 1.0
+     },
+     "DNB": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "uefa-nations-sim": {
+  "name": "UEFA Nations League. Simulation",
+  "kind": "football",
+  "brut": {
+   "predictions": 48304,
+   "events": 600,
+   "brier": 0.1588,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32813,
+     "annonce": 0.2036081087413375,
+     "observe": 0.20878919940267576
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5458,
+     "annonce": 0.5654409101218597,
+     "observe": 0.5613777940637596
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4953,
+     "annonce": 0.7279635932965344,
+     "observe": 0.7177468201090248
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2995,
+     "annonce": 0.8460451231200105,
+     "observe": 0.8240400667779633
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1235,
+     "annonce": 0.9256888514917794,
+     "observe": 0.908502024291498
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 850,
+     "annonce": 0.9700487427513879,
+     "observe": 0.96
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32813,
+     "annonce": 0.204,
+     "observe": 0.209
+    },
+    "Forte": {
+     "n": 4953,
+     "annonce": 0.728,
+     "observe": 0.718
+    },
+    "Moyenne": {
+     "n": 5458,
+     "annonce": 0.565,
+     "observe": 0.561
+    },
+    "Très forte": {
+     "n": 5080,
+     "annonce": 0.886,
+     "observe": 0.867
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.925,
+    "observe": 0.912,
+    "marches": {
+     "OU": {
+      "n": 405,
+      "observe": 0.901
+     },
+     "TEAM": {
+      "n": 137,
+      "observe": 0.942
+     },
+     "HT": {
+      "n": 41,
+      "observe": 0.927
+     },
+     "AH": {
+      "n": 15,
+      "observe": 0.867
+     },
+     "DC": {
+      "n": 2,
+      "observe": 1.0
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 48304,
+   "events": 600,
+   "brier": 0.1588,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 32795,
+     "annonce": 0.20397364099000767,
+     "observe": 0.20872084159170606
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 5531,
+     "annonce": 0.5654250436470506,
+     "observe": 0.560115711444585
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 4907,
+     "annonce": 0.7273280444008122,
+     "observe": 0.7210108008966782
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 2989,
+     "annonce": 0.8455582936435255,
+     "observe": 0.8243559718969555
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 1275,
+     "annonce": 0.9266103596404205,
+     "observe": 0.9074509803921569
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 807,
+     "annonce": 0.966935480587333,
+     "observe": 0.9591078066914498
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 32795,
+     "annonce": 0.204,
+     "observe": 0.209
+    },
+    "Forte": {
+     "n": 4907,
+     "annonce": 0.727,
+     "observe": 0.721
+    },
+    "Moyenne": {
+     "n": 5531,
+     "annonce": 0.565,
+     "observe": 0.56
+    },
+    "Très forte": {
+     "n": 5071,
+     "annonce": 0.885,
+     "observe": 0.867
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.926,
+    "observe": 0.912,
+    "marches": {
+     "OU": {
+      "n": 368,
+      "observe": 0.897
+     },
+     "TEAM": {
+      "n": 151,
+      "observe": 0.934
+     },
+     "HT": {
+      "n": 64,
+      "observe": 0.938
+     },
+     "AH": {
+      "n": 16,
+      "observe": 0.938
+     },
+     "DC": {
+      "n": 1,
+      "observe": 1.0
+     }
+    }
+   }
+  }
+ },
+ "fc24-penalty": {
+  "name": "FC24. Penalty",
+  "kind": "penalty",
+  "brut": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1839,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.23844342860999418,
+     "observe": 0.24208333333333334
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2388,
+     "annonce": 0.5750697284735402,
+     "observe": 0.5791457286432161
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2718,
+     "annonce": 0.7163840128028426,
+     "observe": 0.7067696835908757
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 754,
+     "annonce": 0.8418638126929663,
+     "observe": 0.8196286472148541
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 140,
+     "annonce": 0.9163103252632376,
+     "observe": 0.8857142857142857
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.238,
+     "observe": 0.242
+    },
+    "Moyenne": {
+     "n": 2388,
+     "annonce": 0.575,
+     "observe": 0.579
+    },
+    "Forte": {
+     "n": 2718,
+     "annonce": 0.716,
+     "observe": 0.707
+    },
+    "Très forte": {
+     "n": 894,
+     "annonce": 0.854,
+     "observe": 0.83
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.844,
+    "observe": 0.837,
+    "marches": {
+     "OU": {
+      "n": 374,
+      "observe": 0.85
+     },
+     "TEAM": {
+      "n": 226,
+      "observe": 0.814
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1839,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.2377963625437859,
+     "observe": 0.24208333333333334
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2444,
+     "annonce": 0.5793597176928086,
+     "observe": 0.5777414075286416
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2638,
+     "annonce": 0.7180704512610956,
+     "observe": 0.714177407126611
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 795,
+     "annonce": 0.8400510719818405,
+     "observe": 0.8075471698113208
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 123,
+     "annonce": 0.907203761563092,
+     "observe": 0.8780487804878049
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.238,
+     "observe": 0.242
+    },
+    "Moyenne": {
+     "n": 2444,
+     "annonce": 0.579,
+     "observe": 0.578
+    },
+    "Forte": {
+     "n": 2638,
+     "annonce": 0.718,
+     "observe": 0.714
+    },
+    "Très forte": {
+     "n": 918,
+     "annonce": 0.849,
+     "observe": 0.817
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.841,
+    "observe": 0.84,
+    "marches": {
+     "OU": {
+      "n": 387,
+      "observe": 0.85
+     },
+     "TEAM": {
+      "n": 213,
+      "observe": 0.822
+     }
+    }
+   }
+  }
+ },
+ "fc25-penalty": {
+  "name": "FC25. Penalty",
+  "kind": "penalty",
+  "brut": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1836,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.24488137027631618,
+     "observe": 0.24666666666666667
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2654,
+     "annonce": 0.5760423047685509,
+     "observe": 0.5746043707611153
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2654,
+     "annonce": 0.7165019007798028,
+     "observe": 0.7155237377543331
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 580,
+     "annonce": 0.8428420585996619,
+     "observe": 0.8344827586206897
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 109,
+     "annonce": 0.921771687711808,
+     "observe": 0.926605504587156
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 3,
+     "annonce": 0.9520882776317386,
+     "observe": 1.0
+    }
+   ],
+   "by_tier": {
+    "Forte": {
+     "n": 2654,
+     "annonce": 0.717,
+     "observe": 0.716
+    },
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.245,
+     "observe": 0.247
+    },
+    "Moyenne": {
+     "n": 2654,
+     "annonce": 0.576,
+     "observe": 0.575
+    },
+    "Très forte": {
+     "n": 692,
+     "annonce": 0.856,
+     "observe": 0.85
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.848,
+    "observe": 0.833,
+    "marches": {
+     "OU": {
+      "n": 455,
+      "observe": 0.833
+     },
+     "TEAM": {
+      "n": 131,
+      "observe": 0.824
+     },
+     "WINNER": {
+      "n": 14,
+      "observe": 0.929
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1836,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.24390963880805352,
+     "observe": 0.24666666666666667
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2725,
+     "annonce": 0.5803979737879944,
+     "observe": 0.5757798165137614
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2557,
+     "annonce": 0.7188412878742473,
+     "observe": 0.7195932733672272
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 606,
+     "annonce": 0.8400933729837965,
+     "observe": 0.8234323432343235
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 112,
+     "annonce": 0.9212740523207571,
+     "observe": 0.9285714285714286
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Forte": {
+     "n": 2557,
+     "annonce": 0.719,
+     "observe": 0.72
+    },
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.244,
+     "observe": 0.247
+    },
+    "Moyenne": {
+     "n": 2725,
+     "annonce": 0.58,
+     "observe": 0.576
+    },
+    "Très forte": {
+     "n": 718,
+     "annonce": 0.853,
+     "observe": 0.84
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.848,
+    "observe": 0.837,
+    "marches": {
+     "OU": {
+      "n": 459,
+      "observe": 0.834
+     },
+     "TEAM": {
+      "n": 127,
+      "observe": 0.835
+     },
+     "WINNER": {
+      "n": 14,
+      "observe": 0.929
+     }
+    }
+   }
+  }
+ },
+ "fc26-penalty": {
+  "name": "FC26. Penalty",
+  "kind": "penalty",
+  "brut": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1821,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.2385346214505241,
+     "observe": 0.24479166666666666
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2448,
+     "annonce": 0.576011214722094,
+     "observe": 0.568218954248366
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2502,
+     "annonce": 0.7108317654585516,
+     "observe": 0.6994404476418865
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 860,
+     "annonce": 0.84498072433083,
+     "observe": 0.8395348837209302
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 179,
+     "annonce": 0.9226471693919976,
+     "observe": 0.9050279329608939
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 11,
+     "annonce": 0.9654132051759984,
+     "observe": 1.0
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.239,
+     "observe": 0.245
+    },
+    "Forte": {
+     "n": 2502,
+     "annonce": 0.711,
+     "observe": 0.699
+    },
+    "Très forte": {
+     "n": 1050,
+     "annonce": 0.859,
+     "observe": 0.852
+    },
+    "Moyenne": {
+     "n": 2448,
+     "annonce": 0.576,
+     "observe": 0.568
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.855,
+    "observe": 0.847,
+    "marches": {
+     "OU": {
+      "n": 408,
+      "observe": 0.831
+     },
+     "TEAM": {
+      "n": 177,
+      "observe": 0.876
+     },
+     "WINNER": {
+      "n": 15,
+      "observe": 0.933
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1821,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.23814886964681753,
+     "observe": 0.24479166666666666
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2476,
+     "annonce": 0.5791577747880908,
+     "observe": 0.5690630048465266
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2440,
+     "annonce": 0.7114980225932183,
+     "observe": 0.7012295081967214
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 906,
+     "annonce": 0.8413833972387479,
+     "observe": 0.8322295805739515
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 177,
+     "annonce": 0.9121108041964838,
+     "observe": 0.9096045197740112
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 1,
+     "annonce": 0.9518770337603308,
+     "observe": 1.0
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.238,
+     "observe": 0.245
+    },
+    "Forte": {
+     "n": 2440,
+     "annonce": 0.711,
+     "observe": 0.701
+    },
+    "Très forte": {
+     "n": 1084,
+     "annonce": 0.853,
+     "observe": 0.845
+    },
+    "Moyenne": {
+     "n": 2476,
+     "annonce": 0.579,
+     "observe": 0.569
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.852,
+    "observe": 0.845,
+    "marches": {
+     "OU": {
+      "n": 413,
+      "observe": 0.828
+     },
+     "TEAM": {
+      "n": 166,
+      "observe": 0.873
+     },
+     "WINNER": {
+      "n": 21,
+      "observe": 0.952
+     }
+    }
+   }
+  }
+ },
+ "fifa23-penalty": {
+  "name": "FIFA23. Penalty",
+  "kind": "penalty",
+  "brut": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1774,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.2334353129823225,
+     "observe": 0.23479166666666668
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2405,
+     "annonce": 0.5748857646034867,
+     "observe": 0.5717255717255717
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2432,
+     "annonce": 0.7222440649698902,
+     "observe": 0.7047697368421053
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 928,
+     "annonce": 0.8478448699022642,
+     "observe": 0.84375
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 162,
+     "annonce": 0.9205903402449245,
+     "observe": 0.9259259259259259
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 73,
+     "annonce": 0.9588955599539472,
+     "observe": 0.9041095890410958
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.233,
+     "observe": 0.235
+    },
+    "Forte": {
+     "n": 2432,
+     "annonce": 0.722,
+     "observe": 0.705
+    },
+    "Moyenne": {
+     "n": 2405,
+     "annonce": 0.575,
+     "observe": 0.572
+    },
+    "Très forte": {
+     "n": 1163,
+     "annonce": 0.865,
+     "observe": 0.859
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.869,
+    "observe": 0.867,
+    "marches": {
+     "OU": {
+      "n": 294,
+      "observe": 0.895
+     },
+     "TEAM": {
+      "n": 235,
+      "observe": 0.83
+     },
+     "WINNER": {
+      "n": 71,
+      "observe": 0.873
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1773,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.23284860155902257,
+     "observe": 0.23479166666666668
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2436,
+     "annonce": 0.5778918869028042,
+     "observe": 0.5722495894909688
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2393,
+     "annonce": 0.7242009377668638,
+     "observe": 0.705390722941914
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 966,
+     "annonce": 0.8480838335890204,
+     "observe": 0.8457556935817805
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 200,
+     "annonce": 0.9295523433730868,
+     "observe": 0.92
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 5,
+     "annonce": 0.9502713310265222,
+     "observe": 1.0
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.233,
+     "observe": 0.235
+    },
+    "Forte": {
+     "n": 2393,
+     "annonce": 0.724,
+     "observe": 0.705
+    },
+    "Moyenne": {
+     "n": 2436,
+     "annonce": 0.578,
+     "observe": 0.572
+    },
+    "Très forte": {
+     "n": 1171,
+     "annonce": 0.862,
+     "observe": 0.859
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.875,
+    "observe": 0.875,
+    "marches": {
+     "OU": {
+      "n": 338,
+      "observe": 0.908
+     },
+     "TEAM": {
+      "n": 192,
+      "observe": 0.818
+     },
+     "WINNER": {
+      "n": 70,
+      "observe": 0.871
+     }
+    }
+   }
+  }
+ },
+ "penalty": {
+  "name": "Penalty",
+  "kind": "penalty",
+  "brut": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1787,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.23618573025830353,
+     "observe": 0.23979166666666665
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2555,
+     "annonce": 0.571210332897341,
+     "observe": 0.574559686888454
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2295,
+     "annonce": 0.7215957164435107,
+     "observe": 0.7032679738562092
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 798,
+     "annonce": 0.8437157565511143,
+     "observe": 0.8320802005012531
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 269,
+     "annonce": 0.9244639700312856,
+     "observe": 0.929368029739777
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 83,
+     "annonce": 0.965925236814654,
+     "observe": 0.9879518072289156
+    }
+   ],
+   "by_tier": {
+    "Forte": {
+     "n": 2295,
+     "annonce": 0.722,
+     "observe": 0.703
+    },
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.236,
+     "observe": 0.24
+    },
+    "Moyenne": {
+     "n": 2555,
+     "annonce": 0.571,
+     "observe": 0.575
+    },
+    "Très forte": {
+     "n": 1150,
+     "annonce": 0.871,
+     "observe": 0.866
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.879,
+    "observe": 0.873,
+    "marches": {
+     "OU": {
+      "n": 459,
+      "observe": 0.893
+     },
+     "TEAM": {
+      "n": 100,
+      "observe": 0.81
+     },
+     "WINNER": {
+      "n": 41,
+      "observe": 0.805
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 15600,
+   "events": 600,
+   "brier": 0.1787,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 9600,
+     "annonce": 0.23569954924152425,
+     "observe": 0.23979166666666665
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 2639,
+     "annonce": 0.5759781149497121,
+     "observe": 0.5774914740431982
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 2164,
+     "annonce": 0.7239147503056176,
+     "observe": 0.7019408502772643
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 852,
+     "annonce": 0.8406912840516189,
+     "observe": 0.8333333333333334
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 328,
+     "annonce": 0.924441655890117,
+     "observe": 0.9390243902439024
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 17,
+     "annonce": 0.955729466359208,
+     "observe": 1.0
+    }
+   ],
+   "by_tier": {
+    "Moyenne": {
+     "n": 2639,
+     "annonce": 0.576,
+     "observe": 0.577
+    },
+    "Faible": {
+     "n": 9600,
+     "annonce": 0.236,
+     "observe": 0.24
+    },
+    "Très forte": {
+     "n": 1197,
+     "annonce": 0.865,
+     "observe": 0.865
+    },
+    "Forte": {
+     "n": 2164,
+     "annonce": 0.724,
+     "observe": 0.702
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.881,
+    "observe": 0.875,
+    "marches": {
+     "OU": {
+      "n": 457,
+      "observe": 0.891
+     },
+     "TEAM": {
+      "n": 98,
+      "observe": 0.827
+     },
+     "WINNER": {
+      "n": 45,
+      "observe": 0.822
+     }
+    }
+   }
+  }
+ },
+ "21-classics": {
+  "name": "21 classics",
+  "kind": "21",
+  "brut": {
+   "predictions": 10060,
+   "events": 600,
+   "brier": 0.2008,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7130,
+     "annonce": 0.30917727682613605,
+     "observe": 0.2953716690042076
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1730,
+     "annonce": 0.5644058296652327,
+     "observe": 0.5242774566473989
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.7184071526333504,
+     "observe": 0.7616666666666667
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7130,
+     "annonce": 0.309,
+     "observe": 0.295
+    },
+    "Moyenne": {
+     "n": 1730,
+     "annonce": 0.564,
+     "observe": 0.524
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.718,
+     "observe": 0.762
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.718,
+    "observe": 0.725,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.725
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 10060,
+   "events": 600,
+   "brier": 0.2002,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7130,
+     "annonce": 0.30116320423862347,
+     "observe": 0.2953716690042076
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1730,
+     "annonce": 0.5501740202259437,
+     "observe": 0.5242774566473989
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.739620242983342,
+     "observe": 0.7616666666666667
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7130,
+     "annonce": 0.301,
+     "observe": 0.295
+    },
+    "Moyenne": {
+     "n": 1730,
+     "annonce": 0.55,
+     "observe": 0.524
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.74,
+     "observe": 0.762
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.74,
+    "observe": 0.725,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.725
+     }
+    }
+   }
+  }
+ },
+ "21-dota-bo3": {
+  "name": "21 Dota. Jusqu'à 3 victoires",
+  "kind": "21",
+  "brut": {
+   "predictions": 10064,
+   "events": 600,
+   "brier": 0.1999,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7132,
+     "annonce": 0.3092183626872113,
+     "observe": 0.2943073471676949
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1732,
+     "annonce": 0.5643826249457341,
+     "observe": 0.5334872979214781
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.7184071526333504,
+     "observe": 0.7666666666666667
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7132,
+     "annonce": 0.309,
+     "observe": 0.294
+    },
+    "Moyenne": {
+     "n": 1732,
+     "annonce": 0.564,
+     "observe": 0.533
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.718,
+     "observe": 0.767
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.718,
+    "observe": 0.722,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.722
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 10064,
+   "events": 600,
+   "brier": 0.1993,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7132,
+     "annonce": 0.30120635347599084,
+     "observe": 0.2943073471676949
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1732,
+     "annonce": 0.5501680070562942,
+     "observe": 0.5334872979214781
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.739620242983342,
+     "observe": 0.7666666666666667
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7132,
+     "annonce": 0.301,
+     "observe": 0.294
+    },
+    "Moyenne": {
+     "n": 1732,
+     "annonce": 0.55,
+     "observe": 0.533
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.74,
+     "observe": 0.767
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.74,
+    "observe": 0.722,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.722
+     }
+    }
+   }
+  }
+ },
+ "le-21": {
+  "name": "Le 21",
+  "kind": "21",
+  "brut": {
+   "predictions": 10060,
+   "events": 600,
+   "brier": 0.2015,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7130,
+     "annonce": 0.30917727682613605,
+     "observe": 0.29845722300140254
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1730,
+     "annonce": 0.5644058296652327,
+     "observe": 0.5329479768786127
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.7184071526333504,
+     "observe": 0.7575
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7130,
+     "annonce": 0.309,
+     "observe": 0.298
+    },
+    "Moyenne": {
+     "n": 1730,
+     "annonce": 0.564,
+     "observe": 0.533
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.718,
+     "observe": 0.758
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.718,
+    "observe": 0.717,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.717
+     }
+    }
+   }
+  },
+  "calibre": {
+   "predictions": 10060,
+   "events": 600,
+   "brier": 0.201,
+   "calibration": [
+    {
+     "tranche": "0-50 %",
+     "n": 7130,
+     "annonce": 0.3011632042386235,
+     "observe": 0.29845722300140254
+    },
+    {
+     "tranche": "50-65 %",
+     "n": 1730,
+     "annonce": 0.5501740202259437,
+     "observe": 0.5329479768786127
+    },
+    {
+     "tranche": "65-80 %",
+     "n": 1200,
+     "annonce": 0.739620242983342,
+     "observe": 0.7575
+    },
+    {
+     "tranche": "80-90 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "90-95 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    },
+    {
+     "tranche": "95-100 %",
+     "n": 0,
+     "annonce": null,
+     "observe": null
+    }
+   ],
+   "by_tier": {
+    "Faible": {
+     "n": 7130,
+     "annonce": 0.301,
+     "observe": 0.298
+    },
+    "Moyenne": {
+     "n": 1730,
+     "annonce": 0.55,
+     "observe": 0.533
+    },
+    "Forte": {
+     "n": 1200,
+     "annonce": 0.74,
+     "observe": 0.758
+    }
+   },
+   "pick": {
+    "n": 600,
+    "annonce": 0.74,
+    "observe": 0.717,
+    "marches": {
+     "OU": {
+      "n": 600,
+      "observe": 0.717
+     }
+    }
+   }
+  }
+ }
+}

@@ -22,3 +22,11 @@ Prototype fonctionnel en un seul fichier (`omniscore.html`), sans dépendance ni
 - **Simulateur « et si »** dans la fiche match : forme offensive ±30 %, absence du meilleur buteur, carton rouge à la minute X, forte pluie → probabilités recalculées avec l'écart.
 - **Comparateur d'équipes** : radar sur 8 statistiques dans Stats équipes.
 - Bouton **+** pour suivre un pari depuis les Value bets, les fiches match, les coupons et le Combo.
+
+## Virtuel (`virtuel.html`)
+Football virtuel FIFA / EA FC (dont 5x5, 4x4 et 3x3), tirs au but et Jeu 21, alimentés par `backend/omniscore/virtual` (`python -m omniscore.virtual demo && python scripts/export_virtual.py`).
+- **Pronostics** : toutes les options de chaque événement triées par probabilité, pick principal en tête, niveaux 🟢 🟡 🟠 🔴, cote, value et mise ¼ Kelly, filtres.
+- **Journal** : picks figés avant l'événement, réglés VALIDÉ ✅ / PERDU ❌ / REMBOURSÉ ↩️, réussite par niveau et par compétition.
+- **Transparence** : backtest hors échantillon (annoncé contre observé) et tests de régularité du générateur.
+- **Calculette 21** : EV rester / tirer / doubler selon les cartes vues et le nombre de jeux.
+Données de démonstration simulées tant qu'aucun CSV réel n'est importé.

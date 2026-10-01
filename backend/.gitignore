@@ -2,3 +2,6 @@ data/cache/
 data/backtest_rows.json
 __pycache__/
 .pytest_cache/
+data/virtual/demo.json
+data/virtual/journal_demo.json
+data/virtual/latest.json
